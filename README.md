@@ -99,7 +99,25 @@
 通常情况下，可以在蓝奏云中获取到TuneFree各版本安装包
 - [蓝奏云](https://sayqz.lanpv.com/s/tunefree)
 
+## ⚙️ 本地部署
 
+1. 本地部署需要用到 `Node.js`。可前往 [Node.js 官网](https://nodejs.org/zh-cn/) 下载安装包，请下载最新稳定版
+2. 安装 pnpm
+
+   ```bash
+   npm install pnpm -g
+   ```
+
+3. 克隆仓库并拉取至本地，此处不再赘述
+4. 使用 `pnpm install` 安装项目依赖（若安装过程中遇到网络错误，请使用国内镜像源替代，此处不再赘述）
+5. 复制 `/.env.example` 文件并重命名为 `/.env` 并修改配置
+6. 打包客户端，请依据你的系统类型来选择，打包成功后，会输出安装包或可执行文件在 `/dist` 目录中，可自行安装
+
+   | 命令               | 系统类型 |
+   | ------------------ | -------- |
+   | `pnpm build:win`   | Windows  |
+   | `pnpm build:linux` | Linux    |
+   | `pnpm build:mac`   | MacOS    |
 
 ## 📢 免责声明
 
