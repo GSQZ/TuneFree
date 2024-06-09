@@ -1,0 +1,6 @@
+node_modules
+dist
+out
+.gitignore
+auto-imports.d.ts
+components.d.ts
