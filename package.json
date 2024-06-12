@@ -1,11 +1,11 @@
 {
   "name": "tunefree",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "TuneFree - 音遇自由",
   "main": "./out/main/index.js",
   "author": "是青旨啊",
-  "home": "https://sayqz.com",
-  "github": "https://tunefree.fun",
+  "home": "https://csm.sayqz.com",
+  "github": "https://github.com/GSQZ",
   "license": "AGPL-3.0",
   "license-file": "LICENSE",
   "engines": {
