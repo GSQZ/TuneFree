@@ -149,8 +149,8 @@ const getNormalSongUrl = async (id, status, playNow) => {
     if (!res.data?.[0] || !res.data?.[0]?.url) return null;
     // 检查是否只能试听
     if (res.data?.[0]?.freeTrialInfo !== null && checkPlatform.electron()) return null;
-    // 返回歌曲地址，将 http 转换为 https
-    const url = res.data[0].url.replace(/^http:/, "https:");
+    // 返回歌曲地址，不将http转https
+    const url = res.data[0].url.replace(/^http:/, "http:");
     // 更改状态
     if (playNow && url) status.playState = true;
     return url;
