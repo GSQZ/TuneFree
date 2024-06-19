@@ -128,9 +128,11 @@ onBeforeUnmount(() => {
     flex-direction: column;
     align-items: center;
     border-radius: 12px;
+    height: 180;
     overflow: hidden;
     .qr {
       min-width: 180px;
+      min-height: 180px;
       height: 180px;
       width: 180px;
       box-sizing: border-box;
