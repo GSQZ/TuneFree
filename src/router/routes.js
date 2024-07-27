@@ -294,6 +294,15 @@ const routes = [
       },
       component: () => import("@/views/Sponsors/index.vue"),
     },
+      // 首页
+  {
+    path: "/lyric",
+    name: "lyric",
+    meta: { 
+      title: "桌面歌词",
+    },
+    component: () => import("@/views/DesktopLyric.vue")
+  },
   // 播客 -分类
   {
     path: "/dj-type",
