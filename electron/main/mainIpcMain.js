@@ -12,7 +12,27 @@ import fs from "fs/promises";
  * @param {BrowserWindow} win - 要监听 IPC 事件的程序窗口
  */
 
-const mainIpcMain = (win) => {
+const mainIpcMain = (win, {showLyricWin, hideLyricWin, lyricDragStart, lyricDragMoving, lyricLock, lyricUnlock}) => {
+
+  
+  ipcMain.on("lyric-lock", () => {
+    lyricLock()
+  })
+  ipcMain.on("lyric-unlock", () => {
+    lyricUnlock()
+  })
+  ipcMain.on("lyric-show", () => {
+    showLyricWin()
+  })
+  ipcMain.on("lyric-hide", () => {
+    hideLyricWin()
+  })
+  ipcMain.on('lyric-drag-start', (ev) => {
+    lyricDragStart(ev)
+  })
+  ipcMain.on('lyric-drag-moving', (ev, params) => {
+    lyricDragMoving(ev, params)
+  })
   // 窗口操作部分
   ipcMain.on("window-min", (ev) => {
     // 阻止最小化
