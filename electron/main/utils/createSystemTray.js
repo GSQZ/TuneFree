@@ -69,7 +69,6 @@ const createIcon = (name) => {
     )
     .resize({ width: 16, height: 16 });
 };
-
 // 生成右键菜单
 const createTrayMenu = (win) => {
   // 返回菜单

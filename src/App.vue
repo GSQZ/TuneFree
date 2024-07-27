@@ -1,5 +1,6 @@
 <template>
   <Provider>
+    <template v-if="!isLyric">
     <!-- 主框架 -->
     <n-layout :class="['all-layout', { 'full-player': showFullPlayer }]">
       <!-- 导航栏 -->
@@ -74,10 +75,17 @@
       cross
       fullscreen
     /> -->
+    
+      
+  </template>
+  <template v-else>
+    <MainLayout />
+  </template>
   </Provider>
 </template>
 
 <script setup>
+import { onBeforeMount, ref } from 'vue'
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { darkTheme, NButton } from "naive-ui";
@@ -89,7 +97,7 @@ import globalShortcut from "@/utils/globalShortcut";
 import globalEvents from "@/utils/globalEvents";
 import axios from 'axios';
 import packageJson from "@/../package.json";
-
+const isLyric = ref(true)
 const router = useRouter();
 const music = musicData();
 const status = siteStatus();
@@ -221,6 +229,9 @@ const handleKeyUp = (event) => {
   globalShortcut(event, router);
 };
 
+onBeforeMount(() => {
+  isLyric.value = window.location.hash == '#/lyric'
+})
 onMounted(async () => {
   // 挂载方法
   window.$canNotConnect = canNotConnect;
