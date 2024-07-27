@@ -1,6 +1,6 @@
 {
   "name": "tunefree",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "TuneFree - 音遇自由",
   "main": "./out/main/index.js",
   "author": "是青旨啊",
@@ -56,7 +56,7 @@
     "@vitejs/plugin-vue": "^5.0.3",
     "@vue/eslint-config-prettier": "^9.0.0",
     "ajv": "^8.12.0",
-    "electron": "^28.1.4",
+    "electron": "^28.3.3",
     "electron-builder": "^24.9.1",
     "electron-log": "^5.0.3",
     "electron-vite": "^2.0.0",
