@@ -205,42 +205,51 @@
           <SvgIcon icon="skip-next-rounded" />
         </n-icon>
       </div>
-      <!-- 功能区 -->
-      <Transition name="fade" mode="out-in">
-        <div :key="playMode" class="menu">
-          <!-- 时间进度 -->
-          <div class="time hidden">
-            <n-text class="played" depth="3">{{ playTimeData.played }}</n-text>
-            <n-text depth="3">{{ playTimeData.durationTime }}</n-text>
-          </div>
-          <!-- 播放模式 -->
-          <n-dropdown
-            v-if="playMode !== 'fm'"
-            :options="playModeOptions"
-            :show-arrow="true"
-            trigger="hover"
-            @select="playModeChange"
-          >
-            <n-icon
-              class="mode hidden"
-              size="22"
-              @click.stop="playModeChange(false)"
-              @dblclick.stop
-            >
-              <SvgIcon
-                :icon="
-                  playHeartbeatMode
-                    ? 'heartbit'
-                    : playSongMode === 'normal'
-                      ? 'repeat-list'
-                      : playSongMode === 'random'
-                        ? 'shuffle'
-                        : 'repeat-song'
-                "
-                isSpecial
-              />
-            </n-icon>
-          </n-dropdown>
+<!-- 功能区 -->
+<Transition name="fade" mode="out-in">
+  <div :key="playMode" class="menu">
+    <!-- 时间进度 -->
+    <div class="time hidden">
+      <n-text class="played" depth="3">{{ playTimeData.played }}</n-text>
+      <n-text depth="3">{{ playTimeData.durationTime }}</n-text>
+    </div>
+    <!-- 播放模式 -->
+    <n-dropdown
+      v-if="playMode !== 'fm'"
+      :options="playModeOptions"
+      :show-arrow="true"
+      trigger="hover"
+      @select="playModeChange"
+    >
+      <n-icon
+        class="mode hidden"
+        size="22"
+        @click.stop="playModeChange(false)"
+        @dblclick.stop
+      >
+        <SvgIcon
+          :icon="
+            playHeartbeatMode
+              ? 'heartbit'
+              : playSongMode === 'normal'
+                ? 'repeat-list'
+                : playSongMode === 'random'
+                  ? 'shuffle'
+                  : 'repeat-song'
+          "
+          isSpecial
+        />
+      </n-icon>
+    </n-dropdown>
+    
+    <!-- 桌面歌词按钮 -->
+    <n-icon
+      class="desktop-lyric-btn"
+      size="22"
+      @click.stop="toggleDesktopLyric"
+    >
+      <SvgIcon icon="lrc-text" />
+    </n-icon>
           <!-- 倍速 -->
           <n-popover :show-arrow="false" trigger="hover" placement="top-end" raw>
             <template #trigger>
@@ -357,6 +366,7 @@ import debounce from "@/utils/debounce";
 import SvgIcon from "@/components/Global/SvgIcon";
 import VueSlider from "vue-slider-component";
 import "vue-slider-component/theme/default.css";
+
 
 const router = useRouter();
 const data = siteData();
@@ -551,6 +561,68 @@ watch(
   () => playHeartbeatMode.value,
   (val) => $message.success(`已${val ? "开启" : "退出"}心动模式`),
 );
+// 定义showDesktopLyric
+const showDesktopLyric = ref(false); 
+
+// 切换桌面歌词的显示状态
+const toggleDesktopLyric = () => {
+
+  showDesktopLyric.value = !showDesktopLyric.value;
+
+  $message.success(`桌面歌词已${showDesktopLyric.value ? '开启' : '关闭'}`);
+};
+
+watch(showDesktopLyric, (newValue) => {
+  electron.ipcRenderer.send(newValue ? 'lyric-show' : 'lyric-hide')
+})
+
+// 监听歌词索引变化
+watch(playSongLyricIndex, (newIndex) => {
+  const lyrics = playSongLyric.value.lrc;
+  const hasYrc = playSongLyric.value.hasYrc;
+  const yrc = playSongLyric.value.yrc;
+
+  // 检查 newIndex 是否在普通歌词的有效范围内
+  if (newIndex >= 0 && newIndex < lyrics.length) {
+    // 定义当前和下一条歌词
+    let currentLyric = lyrics[newIndex].content;
+
+    // 检查下一条歌词的索引是否有效
+    let nextLyric = null;
+    if (newIndex + 1 < lyrics.length) {
+      nextLyric = lyrics[newIndex + 1].content;
+    }
+
+    // 判断是否逐字歌词
+    if (hasYrc && showYrc) {
+      if (newIndex < yrc.length) {
+        const yrcContent = yrc[newIndex]?.content;
+        // 拼凑成完整的逐字歌词，包括空格
+        const fullLyric = yrcContent.map(item => item.content).join(' ');
+        
+        // 缓存当前和下一条歌词到 localStorage
+        localStorage.setItem('currentLyric', fullLyric);
+        localStorage.setItem('nextLyric', nextLyric);
+        localStorage.setItem('newIndex', newIndex);
+      } else {
+        console.log('逐字歌词索引超出范围:', newIndex);
+        localStorage.setItem('newIndex', newIndex);
+      }
+    } else {
+      // 缓存普通歌词到 localStorage
+      localStorage.setItem('currentLyric', currentLyric);
+      localStorage.setItem('nextLyric', nextLyric);
+      localStorage.setItem('newIndex', newIndex);
+    }
+
+    // console.log('currentLyric:', localStorage.getItem('currentLyric'));
+
+  } else {
+    console.log('普通歌词索引超出范围:', newIndex);
+    localStorage.setItem('newIndex', newIndex);
+  }
+});
+
 </script>
 
 <style lang="scss" scoped>
@@ -603,6 +675,20 @@ watch(
       }
     }
   }
+  .desktop-lyric-btn {
+    margin-left: 8px;
+    color: var(--main-color);
+    cursor: pointer;
+    transition: transform 0.3s;
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+    &:active {
+      transform: scale(1);
+    }
+  }
+
   .player {
     width: 100%;
     height: 100%;
