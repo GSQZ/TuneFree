@@ -15,11 +15,13 @@ jobs:
           node-version: 20
       - name: setup environment
         run: npm install pnpm -g
-             pnpm install
+      - name: install libs
+        run: pnpm install
              
       - name: build linux x64
         run: pnpm build:linux
-             AMD64APPIMAGE=$(find dist -name '*-x64.AppImage')
+      - name: reg linux x64 builds
+        run: AMD64APPIMAGE=$(find dist -name '*-x64.AppImage')
              AMD64RPM=$(find dist -name '*-x64.rpm')
              AMD64DEB=$(find dist -name '*-x64.deb')
              AMD64TARBALL=$(find dist -name '*-x64.tar.gz')
@@ -33,7 +35,8 @@ jobs:
              echo "NAME_AMD64TARBALL=$(basename '$AMD64TARBALL')" >> $GITHUB_ENV
       - name: build linux arm64
         run: pnpm build:linux-arm64
-             ARM64APPIMAGE=$(find dist -name '*-arm64.AppImage')
+      - name: reg linux arm64 builds
+        run: ARM64APPIMAGE=$(find dist -name '*-arm64.AppImage')
              ARM64RPM=$(find dist -name '*-arm64.rpm')
              ARM64DEB=$(find dist -name '*-arm64.deb')
              ARM64TARBALL=$(find dist -name '*-arm64.tar.gz')
