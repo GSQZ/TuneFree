@@ -27,14 +27,18 @@ jobs:
              AMD64RPM=$(find dist -name '*-x64.rpm')
              AMD64DEB=$(find dist -name '*-x64.deb')
              AMD64TARBALL=$(find dist -name '*-x64.tar.gz')
+             NAME_AMD64APPIMAGE = $(basename '$AMD64APPIMAGE')
+             NAME_AMD64RPM=$(basename '$AMD64RPM')
+             NAME_AMD64DEB=$(basename '$AMD64DEB')
+             NAME_AMD64TARBALL=$(basename '$AMD64TARBALL')
              echo "AMD64APPIMAGE=$AMD64APPIMAGE" >> $GITHUB_ENV
-             echo "NAME_AMD64APPIMAGE=$(basename '$AMD64APPIMAGE')" >> $GITHUB_ENV
+             echo "NAME_AMD64APPIMAGE=$NAME_AMD64APPIMAGE" >> $GITHUB_ENV
              echo "AMD64RPM=$AMD64RPM" >> $GITHUB_ENV
-             echo "NAME_AMD64RPM=$(basename '$AMD64RPM')" >> $GITHUB_ENV
+             echo "NAME_AMD64RPM=$NAME_AMD64RPM" >> $GITHUB_ENV
              echo "AMD64DEB=$AMD64DEB" >> $GITHUB_ENV
-             echo "NAME_AMD64DEB=$(basename '$AMD64DEB')" >> $GITHUB_ENV
-             echo "AMD64TARBALL=$(find dist -name '*-x64.tar.gz')" >> $GITHUB_ENV
-             echo "NAME_AMD64TARBALL=$(basename '$AMD64TARBALL')" >> $GITHUB_ENV
+             echo "NAME_AMD64DEB=$NAME_AMD64DEB" >> $GITHUB_ENV
+             echo "AMD64TARBALL=$AMD64TARBALL" >> $GITHUB_ENV
+             echo "NAME_AMD64TARBALL=$NAME_AMD64TARBALL" >> $GITHUB_ENV
       - name: build linux arm64
         run: pnpm build:linux-arm64
         env: 
@@ -44,14 +48,18 @@ jobs:
              ARM64RPM=$(find dist -name '*-arm64.rpm')
              ARM64DEB=$(find dist -name '*-arm64.deb')
              ARM64TARBALL=$(find dist -name '*-arm64.tar.gz')
+             NAME_ARM64APPIMAGE = $(basename '$ARM64APPIMAGE')
+             NAME_ARM64RPM=$(basename '$ARM64RPM')
+             NAME_ARM64DEB=$(basename '$ARM64DEB')
+             NAME_ARM64TARBALL=$(basename '$ARM64TARBALL')
              echo "ARM64APPIMAGE=$ARM64APPIMAGE" >> $GITHUB_ENV
-             echo "NAME_ARM64APPIMAGE=$(basename '$ARM64APPIMAGE')" >> $GITHUB_ENV
+             echo "NAME_ARM64APPIMAGE=$NAME_ARM64APPIMAGE" >> $GITHUB_ENV
              echo "ARM64RPM=$ARM64RPM" >> $GITHUB_ENV
-             echo "NAME_ARM64RPM=$(basename '$ARM64RPM')" >> $GITHUB_ENV
+             echo "NAME_ARM64RPM=$NAME_ARM64RPM" >> $GITHUB_ENV
              echo "ARM64DEB=$ARM64DEB" >> $GITHUB_ENV
-             echo "NAME_ARM64DEB=$(basename '$ARM64DEB')" >> $GITHUB_ENV
-             echo "ARM64TARBALL=$(find dist -name '*-arm64.tar.gz')" >> $GITHUB_ENV
-             echo "NAME_ARM64TARBALL=$(basename '$ARM64TARBALL')" >> $GITHUB_ENV
+             echo "NAME_ARM64DEB=$NAME_ARM64DEB" >> $GITHUB_ENV
+             echo "ARM64TARBALL=$ARM64TARBALL" >> $GITHUB_ENV
+             echo "NAME_ARM64TARBALL=$NAME_ARM64TARBALL" >> $GITHUB_ENV
              
              
         
@@ -98,7 +106,7 @@ jobs:
           path: "${{ env.ARM64TARBALL }}"
 
   BuildWindows:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out Git repository
@@ -142,3 +150,15 @@ jobs:
         with:
           name: "${{ env.NAME_ARM64EXE }}"
           path: "${{ env.ARM64EXE }}"
+
+  publish:
+    name: Publish the package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for tests to succeed
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.ref }}
+          check-name: 'Run tests'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
