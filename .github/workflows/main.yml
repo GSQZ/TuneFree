@@ -116,7 +116,18 @@ jobs:
         with:
           node-version: 20
       - name: setup environment
-        run: npm install pnpm -g
+        run: npm install pnpm -g && 
+        sudo apt-get install wine winetricks &&
+        sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install wine32:i386
+      
+      - name: setup wine
+        run: rm -rf ~/.wine &&
+             mkdir ~/.wine/prefix &&
+             export WINEPREFIX=~/.wine/prefix &&
+             export WINEARCH=win32 &&
+             export WINEPATH=~/.wine &&
+             wineboot --init &&
+             winetricks 
       - name: install libs
         run: pnpm install
   
@@ -150,15 +161,3 @@ jobs:
         with:
           name: "${{ env.NAME_ARM64EXE }}"
           path: "${{ env.ARM64EXE }}"
-
-  publish:
-    name: Publish the package
-    runs-on: ubuntu-latest
-    steps:
-      - name: Wait for tests to succeed
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.ref }}
-          check-name: 'Run tests'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
