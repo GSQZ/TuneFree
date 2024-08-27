@@ -23,42 +23,42 @@ jobs:
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
       - name: reg linux x64 builds
-        run: AMD64APPIMAGE=$(find dist -name '*-x64.AppImage')
-             AMD64RPM=$(find dist -name '*-x64.rpm')
-             AMD64DEB=$(find dist -name '*-x64.deb')
-             AMD64TARBALL=$(find dist -name '*-x64.tar.gz')
-             NAME_AMD64APPIMAGE=$(basename '$AMD64APPIMAGE')
-             NAME_AMD64RPM=$(basename '$AMD64RPM')
-             NAME_AMD64DEB=$(basename '$AMD64DEB')
-             NAME_AMD64TARBALL=$(basename '$AMD64TARBALL')
-             echo "AMD64APPIMAGE=$AMD64APPIMAGE" >> $GITHUB_ENV
-             echo "NAME_AMD64APPIMAGE=$NAME_AMD64APPIMAGE" >> $GITHUB_ENV
-             echo "AMD64RPM=$AMD64RPM" >> $GITHUB_ENV
-             echo "NAME_AMD64RPM=$NAME_AMD64RPM" >> $GITHUB_ENV
-             echo "AMD64DEB=$AMD64DEB" >> $GITHUB_ENV
-             echo "NAME_AMD64DEB=$NAME_AMD64DEB" >> $GITHUB_ENV
-             echo "AMD64TARBALL=$AMD64TARBALL" >> $GITHUB_ENV
+        run: AMD64APPIMAGE=$(find dist -name '*-x64.AppImage') &&
+             AMD64RPM=$(find dist -name '*-x64.rpm') &&
+             AMD64DEB=$(find dist -name '*-x64.deb') &&
+             AMD64TARBALL=$(find dist -name '*-x64.tar.gz') &&
+             NAME_AMD64APPIMAGE=$(basename '$AMD64APPIMAGE') &&
+             NAME_AMD64RPM=$(basename '$AMD64RPM') &&
+             NAME_AMD64DEB=$(basename '$AMD64DEB') &&
+             NAME_AMD64TARBALL=$(basename '$AMD64TARBALL') &&
+             echo "AMD64APPIMAGE=$AMD64APPIMAGE" >> $GITHUB_ENV &&
+             echo "NAME_AMD64APPIMAGE=$NAME_AMD64APPIMAGE" >> $GITHUB_ENV &&
+             echo "AMD64RPM=$AMD64RPM" >> $GITHUB_ENV &&
+             echo "NAME_AMD64RPM=$NAME_AMD64RPM" >> $GITHUB_ENV &&
+             echo "AMD64DEB=$AMD64DEB" >> $GITHUB_ENV &&
+             echo "NAME_AMD64DEB=$NAME_AMD64DEB" >> $GITHUB_ENV &&
+             echo "AMD64TARBALL=$AMD64TARBALL" >> $GITHUB_ENV &&
              echo "NAME_AMD64TARBALL=$NAME_AMD64TARBALL" >> $GITHUB_ENV
       - name: build linux arm64
         run: pnpm build:linux-arm64
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
       - name: reg linux arm64 builds
-        run: ARM64APPIMAGE=$(find dist -name '*-arm64.AppImage')
-             ARM64RPM=$(find dist -name '*-arm64.rpm')
-             ARM64DEB=$(find dist -name '*-arm64.deb')
-             ARM64TARBALL=$(find dist -name '*-arm64.tar.gz')
-             NAME_ARM64APPIMAGE=$(basename '$ARM64APPIMAGE')
-             NAME_ARM64RPM=$(basename '$ARM64RPM')
-             NAME_ARM64DEB=$(basename '$ARM64DEB')
-             NAME_ARM64TARBALL=$(basename '$ARM64TARBALL')
-             echo "ARM64APPIMAGE=$ARM64APPIMAGE" >> $GITHUB_ENV
-             echo "NAME_ARM64APPIMAGE=$NAME_ARM64APPIMAGE" >> $GITHUB_ENV
-             echo "ARM64RPM=$ARM64RPM" >> $GITHUB_ENV
-             echo "NAME_ARM64RPM=$NAME_ARM64RPM" >> $GITHUB_ENV
-             echo "ARM64DEB=$ARM64DEB" >> $GITHUB_ENV
-             echo "NAME_ARM64DEB=$NAME_ARM64DEB" >> $GITHUB_ENV
-             echo "ARM64TARBALL=$ARM64TARBALL" >> $GITHUB_ENV
+        run: ARM64APPIMAGE=$(find dist -name '*-arm64.AppImage') &&
+             ARM64RPM=$(find dist -name '*-arm64.rpm') &&
+             ARM64DEB=$(find dist -name '*-arm64.deb') &&
+             ARM64TARBALL=$(find dist -name '*-arm64.tar.gz') &&
+             NAME_ARM64APPIMAGE=$(basename '$ARM64APPIMAGE') &&
+             NAME_ARM64RPM=$(basename '$ARM64RPM') &&
+             NAME_ARM64DEB=$(basename '$ARM64DEB') &&
+             NAME_ARM64TARBALL=$(basename '$ARM64TARBALL') &&
+             echo "ARM64APPIMAGE=$ARM64APPIMAGE" >> $GITHUB_ENV &&
+             echo "NAME_ARM64APPIMAGE=$NAME_ARM64APPIMAGE" >> $GITHUB_ENV &&
+             echo "ARM64RPM=$ARM64RPM" >> $GITHUB_ENV &&
+             echo "NAME_ARM64RPM=$NAME_ARM64RPM" >> $GITHUB_ENV &&
+             echo "ARM64DEB=$ARM64DEB" >> $GITHUB_ENV &&
+             echo "NAME_ARM64DEB=$NAME_ARM64DEB" >> $GITHUB_ENV &&
+             echo "ARM64TARBALL=$ARM64TARBALL" >> $GITHUB_ENV &&
              echo "NAME_ARM64TARBALL=$NAME_ARM64TARBALL" >> $GITHUB_ENV
              
              
@@ -137,18 +137,18 @@ jobs:
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
       - name: reg windows x64 builds
-        run: AMD64EXE=$(find dist -name '*-x64-*.exe')
-             NAME_AMD64EXE=$(basename '$AMD64EXE')
-             echo "AMD64EXE=$AMD64EXE" >> $GITHUB_ENV
+        run: AMD64EXE=$(find dist -name '*-x64-*.exe') &&
+             NAME_AMD64EXE=$(basename '$AMD64EXE') &&
+             echo "AMD64EXE=$AMD64EXE" >> $GITHUB_ENV &&
              echo "NAME_AMD64EXE=$NAME_AMD64EXE" >> $GITHUB_ENV
       - name: build windows arm64
         run: pnpm build:win-arm64
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
       - name: reg windows arm64 builds
-        run: ARM64EXE=$(find dist -name '*-arm64-*.exe')
-             NAME_ARM64EXE=$(basename '$ARM64EXE')
-             echo "ARM64EXE=$ARM64EXE" >> $GITHUB_ENV
+        run: ARM64EXE=$(find dist -name '*-arm64-*.exe') &&
+             NAME_ARM64EXE=$(basename '$ARM64EXE') &&
+             echo "ARM64EXE=$ARM64EXE" >> $GITHUB_ENV &&
              echo "NAME_ARM64EXE=$NAME_ARM64EXE" >> $GITHUB_ENV
              
              
