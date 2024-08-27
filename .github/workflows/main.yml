@@ -27,7 +27,7 @@ jobs:
              AMD64RPM=$(find dist -name '*-x64.rpm')
              AMD64DEB=$(find dist -name '*-x64.deb')
              AMD64TARBALL=$(find dist -name '*-x64.tar.gz')
-             NAME_AMD64APPIMAGE = $(basename '$AMD64APPIMAGE')
+             NAME_AMD64APPIMAGE=$(basename '$AMD64APPIMAGE')
              NAME_AMD64RPM=$(basename '$AMD64RPM')
              NAME_AMD64DEB=$(basename '$AMD64DEB')
              NAME_AMD64TARBALL=$(basename '$AMD64TARBALL')
@@ -48,7 +48,7 @@ jobs:
              ARM64RPM=$(find dist -name '*-arm64.rpm')
              ARM64DEB=$(find dist -name '*-arm64.deb')
              ARM64TARBALL=$(find dist -name '*-arm64.tar.gz')
-             NAME_ARM64APPIMAGE = $(basename '$ARM64APPIMAGE')
+             NAME_ARM64APPIMAGE=$(basename '$ARM64APPIMAGE')
              NAME_ARM64RPM=$(basename '$ARM64RPM')
              NAME_ARM64DEB=$(basename '$ARM64DEB')
              NAME_ARM64TARBALL=$(basename '$ARM64TARBALL')
@@ -117,8 +117,8 @@ jobs:
           node-version: 20
       - name: setup environment
         run: npm install pnpm -g && 
-        sudo apt-get install wine winetricks &&
-        sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install wine32:i386
+             sudo apt-get install wine winetricks &&
+             sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install wine32:i386
       
       - name: setup wine
         run: rm -rf ~/.wine &&
@@ -137,16 +137,18 @@ jobs:
           GH_TOKEN: ${{ secrets.github_token }}
       - name: reg windows x64 builds
         run: AMD64EXE=$(find dist -name '*-x64-*.exe')
+             NAME_AMD64EXE=$(basename '$AMD64EXE')
              echo "AMD64EXE=$AMD64EXE" >> $GITHUB_ENV
-             echo "NAME_AMD64EXE=$(basename '$AMD64EXE')" >> $GITHUB_ENV
+             echo "NAME_AMD64EXE=$NAME_AMD64EXE" >> $GITHUB_ENV
       - name: build windows arm64
         run: pnpm build:win-arm64
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
       - name: reg windows arm64 builds
         run: ARM64EXE=$(find dist -name '*-arm64-*.exe')
+             NAME_ARM64EXE=$(basename '$ARM64EXE')
              echo "ARM64EXE=$ARM64EXE" >> $GITHUB_ENV
-             echo "NAME_ARM64EXE=$(basename '$ARM64EXE')" >> $GITHUB_ENV
+             echo "NAME_ARM64EXE=$NAME_ARM64EXE" >> $GITHUB_ENV
              
              
         
