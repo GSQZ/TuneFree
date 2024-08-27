@@ -1,3 +1,4 @@
+import JSZip from "jszip";
 // BlobUrl
 let lastSongBlobUrl = null;
 let lastCoverBlobUrl = null;
@@ -317,16 +318,38 @@ export const downloadFile = async (data, song, lyric, options) => {
         JSON.stringify(options),
       );
     } else {
+      alert(options.downloadCoverToFile);
+      alert(options.downloadLyricsToFile);
       // 清理过期的 Blob 链接
       if (lastDownloadBlobUrl) URL.revokeObjectURL(lastDownloadBlobUrl);
       const songRes = await fetch(data?.url.replace(/^http:/, "https:"));
       if (!songRes.ok) throw new Error("下载出错，请重试");
-      const blob = await songRes.blob();
+      let blob = await songRes.blob();
+      let songFileName = `${songName}.${songType}`;
+      let zipFile = null;
+      if (options.downloadCoverToFile || options.downloadLyricsToFile) {
+        zipFile = new JSZip();
+        zipFile.file(songFileName, blob);
+      }
+      if (options.downloadCover && options.downloadCoverToFile) {
+        const coverRes = await fetch(song.cover);
+        if (!coverRes.ok) throw new Error("下载出错，请重试");
+        const coverBlob = await coverRes.blob();
+        zipFile.file(songName + ".jpg", coverBlob);
+      }
+      if (options.downloadLyrics && options.downloadLyricsToFile) {
+        zipFile.file(songName + ".lrc", lyric);
+      }
+      if (zipFile) {
+        alert("here");
+        blob = await zipFile.generateAsync({ type: 'blob' });
+        songFileName = `${songName}.zip`;
+      }
       lastDownloadBlobUrl = URL.createObjectURL(blob);
       // 下载数据
       const a = document.createElement("a");
       a.href = lastDownloadBlobUrl;
-      a.download = `${songName}.${songType}`;
+      a.download = songFileName;
       document.body.appendChild(a);
       a.click();
       a.remove();

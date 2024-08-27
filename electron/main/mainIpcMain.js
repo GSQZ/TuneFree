@@ -12,7 +12,10 @@ import fs from "fs/promises";
  * @param {BrowserWindow} win - 要监听 IPC 事件的程序窗口
  */
 
-const mainIpcMain = (win, {showLyricWin, hideLyricWin, lyricDragStart, lyricDragMoving, lyricLock, lyricUnlock}) => {
+const mainIpcMain = (
+  win,
+  { showLyricWin, hideLyricWin, lyricDragStart, lyricDragMoving, lyricLock, lyricUnlock },
+) => {
 
   
   ipcMain.on("lyric-lock", () => {
@@ -64,6 +67,14 @@ const mainIpcMain = (win, {showLyricWin, hideLyricWin, lyricDragStart, lyricDrag
 
   // 显示进度
   ipcMain.on("setProgressBar", (_, val) => {
+    if (val === "close") {
+      win.setProgressBar(-1);
+      return false;
+    }
+    win.setProgressBar(val / 100);
+  });
+
+  ipcMain.on("setDownloadLyricsToFile", (_, val) => {
     if (val === "close") {
       win.setProgressBar(-1);
       return false;
@@ -216,7 +227,19 @@ const mainIpcMain = (win, {showLyricWin, hideLyricWin, lyricDragStart, lyricDrag
   ipcMain.handle("downloadFile", async (_, songData, options) => {
     try {
       const { url, data, lyric, name, type } = JSON.parse(songData);
-      const { path, downloadMeta, downloadCover, downloadLyrics } = JSON.parse(options);
+      let {
+        path,
+        downloadMeta,
+        downloadCover,
+        downloadLyrics,
+        downloadCoverToFile,
+        downloadLyricsToFile,
+      } = JSON.parse(options);
+      if ((downloadCover && downloadCoverToFile) || (downloadLyrics && downloadLyricsToFile)) {
+        path = path + `/${name}`;
+        fs.mkdir(path);
+        console.log("here");
+      }
       if (fs.access(path)) {
         console.info("开始下载：", name, url);
         // 下载歌曲
@@ -241,13 +264,18 @@ const mainIpcMain = (win, {showLyricWin, hideLyricWin, lyricDragStart, lyricDrag
         songFile.tag.title = data.name || "未知曲目";
         songFile.tag.album = data.album?.name || "未知专辑";
         songFile.tag.performers = data?.artists?.map((ar) => ar.name) || ["未知艺术家"];
-        if (downloadLyrics) songFile.tag.lyrics = lyric;
+        if (downloadLyrics) {
+          songFile.tag.lyrics = lyric;
+          if (downloadLyricsToFile) {
+            fs.writeFile(`${path}/${name}.lrc`, lyric);
+          }
+        }
         if (downloadCover) songFile.tag.pictures = [songCover];
         // 保存元信息
         songFile.save();
         songFile.dispose();
         // 删除封面
-        await fs.unlink(coverDownload.getSavePath());
+        if (!downloadCoverToFile) await fs.unlink(coverDownload.getSavePath());
         return true;
       } else {
         console.log(`目录不存在：${path}`);

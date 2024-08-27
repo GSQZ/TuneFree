@@ -51,6 +51,8 @@ const useSiteSettingsStore = defineStore("siteSettings", {
       downloadMeta: true, // 同时下载元信息
       downloadCover: true, // 同时下载封面
       downloadLyrics: true, // 同时下载歌词
+      downloadLyricsToFile: true,
+      downloadCoverToFile: true,
     };
   },
   getters: {},

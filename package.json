@@ -50,7 +50,8 @@
     "plyr": "^3.7.8",
     "screenfull": "^6.0.2",
     "vue-router": "^4.2.5",
-    "vue-slider-component": "4.1.0-beta.7"
+    "vue-slider-component": "4.1.0-beta.7",
+    "jszip": "3.10.1"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.2",
@@ -73,6 +74,7 @@
     "vite": "^5.0.12",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-pwa": "^0.17.4",
-    "vue": "3.4.8"
+    "vue": "3.4.8",
+    "jszip": "3.10.1"
   }
 }
