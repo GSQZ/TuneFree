@@ -29,7 +29,7 @@ nsis:
   # 一键式安装程序还是辅助安装程序
   oneClick: false
   # 安装程序的生成名称
-  artifactName: ${productName}-${version}-setup.${ext}
+  artifactName: ${productName}-${version}-${arch}-setup.${ext}
   # 创建的桌面快捷方式名称
   shortcutName: ${productName}
   # 卸载时显示的名称
