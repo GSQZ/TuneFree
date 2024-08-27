@@ -140,7 +140,9 @@ jobs:
         run: AMD64EXE=$(find dist -name '*-x64-*.exe') &&
              NAME_AMD64EXE=$(basename '${AMD64EXE}') &&
              echo "AMD64EXE=${AMD64EXE}" >> $GITHUB_ENV &&
-             echo "NAME_AMD64EXE=${NAME_AMD64EXE}" >> $GITHUB_ENV
+             echo "NAME_AMD64EXE=${NAME_AMD64EXE}" >> $GITHUB_ENV &&
+             echo $AMD64EXE &&
+             echo $NAME_AMD64EXE
       - name: build windows arm64
         run: pnpm build:win-arm64
         env: 
