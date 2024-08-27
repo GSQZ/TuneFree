@@ -38,6 +38,20 @@
       <n-text v-else>歌曲信息获取中</n-text>
     </Transition>
     <template #footer>
+      <n-flex justify="start">
+        <div class="name">以文件形式保存歌词</div>
+          <n-switch
+            v-model:value="showTaskbarProgress"
+            :round="false"
+            @update:value="closeTaskbarProgress"
+          />
+          <div class="name">以文件形式保存封面</div>
+          <n-switch
+            v-model:value="showTaskbarProgress"
+            :round="false"
+            @update:value="closeTaskbarProgress"
+          />
+      </n-flex>
       <n-flex justify="end">
         <n-button @click="closeDownloadModal"> 关闭 </n-button>
         <n-button
