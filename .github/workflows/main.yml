@@ -46,7 +46,7 @@ jobs:
           GH_TOKEN: ${{ secrets.github_token }}
       - name: reg linux arm64 builds
         run: ARM64APPIMAGE=$(find dist -name "*-arm64.AppImage") &&
-             ARM64RPM=$(find dist -name "*-arm64.rpm") &&
+             ARM64RPM=$(find dist -name "*-aarch64.rpm") &&
              ARM64DEB=$(find dist -name "*-arm64.deb") &&
              ARM64TARBALL=$(find dist -name "*-arm64.tar.gz") &&
              NAME_ARM64APPIMAGE=$(basename "${ARM64APPIMAGE}") &&
