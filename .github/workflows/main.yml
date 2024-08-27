@@ -24,9 +24,9 @@ jobs:
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
       - name: reg linux x64 builds
-        run: AMD64APPIMAGE=$(find dist -name "*-x64.AppImage") &&
-             AMD64RPM=$(find dist -name "*-x64.rpm") &&
-             AMD64DEB=$(find dist -name "*-x64.deb") &&
+        run: AMD64APPIMAGE=$(find dist -name "*-x86_64.AppImage") &&
+             AMD64RPM=$(find dist -name "*-x86_64.rpm") &&
+             AMD64DEB=$(find dist -name "*-amd64.deb") &&
              AMD64TARBALL=$(find dist -name "*-x64.tar.gz") &&
              NAME_AMD64APPIMAGE=$(basename "${AMD64APPIMAGE}") &&
              NAME_AMD64RPM=$(basename "${AMD64RPM}") &&
