@@ -82,9 +82,6 @@ linux:
   maintainer: imsyy.top
   # 应用程序类别
   category: Audio;Music
-# AppImage 配置
-appImage:
-  #  AppImage 文件的生成名称
-  artifactName: ${productName}-${version}.${ext}
+  artifactName: ${productName}-${version}-${arch}.${ext}
 # 是否在构建之前重新编译原生模块
 npmRebuild: false
