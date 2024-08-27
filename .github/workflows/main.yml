@@ -17,9 +17,11 @@ jobs:
         run: npm install pnpm -g
       - name: install libs
         run: pnpm install
-             
+  
       - name: build linux x64
         run: pnpm build:linux
+        env: |
+          GH_TOKEN: ${{ secrets.github_token }}
       - name: reg linux x64 builds
         run: AMD64APPIMAGE=$(find dist -name '*-x64.AppImage')
              AMD64RPM=$(find dist -name '*-x64.rpm')
@@ -35,6 +37,8 @@ jobs:
              echo "NAME_AMD64TARBALL=$(basename '$AMD64TARBALL')" >> $GITHUB_ENV
       - name: build linux arm64
         run: pnpm build:linux-arm64
+        env: |
+          GH_TOKEN: ${{ secrets.github_token }}
       - name: reg linux arm64 builds
         run: ARM64APPIMAGE=$(find dist -name '*-arm64.AppImage')
              ARM64RPM=$(find dist -name '*-arm64.rpm')
@@ -92,4 +96,49 @@ jobs:
         with:
           name: "${{ env.NAME_ARM64TARBALL }}"
           path: "${{ env.ARM64TARBALL }}"
-      
+
+  BuildWindows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 20
+      - name: setup environment
+        run: npm install pnpm -g
+      - name: install libs
+        run: pnpm install
+  
+      - name: build windows x64
+        run: pnpm build:win
+        env: |
+          GH_TOKEN: ${{ secrets.github_token }}
+      - name: reg windows x64 builds
+        run: AMD64EXE=$(find dist -name '*-x64-*.exe')
+             echo "AMD64EXE=$AMD64EXE" >> $GITHUB_ENV
+             echo "NAME_AMD64EXE=$(basename '$AMD64EXE')" >> $GITHUB_ENV
+      - name: build windows arm64
+        run: pnpm build:win-arm64
+        env: |
+          GH_TOKEN: ${{ secrets.github_token }}
+      - name: reg windows arm64 builds
+        run: ARM64EXE=$(find dist -name '*-arm64-*.exe')
+             echo "ARM64EXE=$ARM64EXE" >> $GITHUB_ENV
+             echo "NAME_ARM64EXE=$(basename '$ARM64EXE')" >> $GITHUB_ENV
+             
+             
+        
+      - name: Upload AMD64 EXE RELEASE
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_AMD64EXE }}"
+          path: "${{ env.AMD64EXE }}"
+
+      - name: Upload ARM64 EXE RELEASE
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_ARM64EXE }}"
+          path: "${{ env.ARM64EXE }}"
