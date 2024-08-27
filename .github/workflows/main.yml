@@ -33,7 +33,7 @@ jobs:
              NAME_AMD64TARBALL=$(basename '${AMD64TARBALL}') &&
              echo "AMD64APPIMAGE=${AMD64APPIMAGE}" >> $GITHUB_ENV &&
              echo "NAME_AMD64APPIMAGE=${NAME_AMD64APPIMAGE}" >> $GITHUB_ENV &&
-             echo "AMD64RPM=${{AMD64RPM}}" >> $GITHUB_ENV &&
+             echo "AMD64RPM=${AMD64RPM}" >> $GITHUB_ENV &&
              echo "NAME_AMD64RPM=${NAME_AMD64RPM}" >> $GITHUB_ENV &&
              echo "AMD64DEB=${AMD64DEB}" >> $GITHUB_ENV &&
              echo "NAME_AMD64DEB=${NAME_AMD64DEB}" >> $GITHUB_ENV &&
