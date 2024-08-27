@@ -318,8 +318,6 @@ export const downloadFile = async (data, song, lyric, options) => {
         JSON.stringify(options),
       );
     } else {
-      alert(options.downloadCoverToFile);
-      alert(options.downloadLyricsToFile);
       // 清理过期的 Blob 链接
       if (lastDownloadBlobUrl) URL.revokeObjectURL(lastDownloadBlobUrl);
       const songRes = await fetch(data?.url.replace(/^http:/, "https:"));
@@ -341,7 +339,6 @@ export const downloadFile = async (data, song, lyric, options) => {
         zipFile.file(songName + ".lrc", lyric);
       }
       if (zipFile) {
-        alert("here");
         blob = await zipFile.generateAsync({ type: 'blob' });
         songFileName = `${songName}.zip`;
       }

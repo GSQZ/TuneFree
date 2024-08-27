@@ -238,7 +238,6 @@ const mainIpcMain = (
       if ((downloadCover && downloadCoverToFile) || (downloadLyrics && downloadLyricsToFile)) {
         path = path + `/${name}`;
         fs.mkdir(path);
-        console.log("here");
       }
       if (fs.access(path)) {
         console.info("开始下载：", name, url);
