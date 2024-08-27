@@ -19,21 +19,74 @@ jobs:
              
       - name: build linux x64
         run: pnpm build:linux
-             echo "AMD64APPIMAGE=$(find dist -name '*-x64.AppImage')" >> $GITHUB_ENV
-             echo "NAME_AMD64APPIMAGE=$(basename -s .AppImage '${{ env.AMD64APPIMAGE }}')" >> $GITHUB_ENV
-             echo "AMD64RPM=$(find dist -name '*-x64.rpm')" >> $GITHUB_ENV
-             echo "NAME_AMD64RPM=$(basename -s .rpm '${{ env.AMD64RPM }}')" >> $GITHUB_ENV
-             echo "AMD64DEB=$(find dist -name '*-x64.deb')" >> $GITHUB_ENV
-             echo "NAME_AMD64DEB=$(basename -s .deb '${{ env.AMD64DEB }}')" >> $GITHUB_ENV
+             AMD64APPIMAGE=$(find dist -name '*-x64.AppImage')
+             AMD64RPM=$(find dist -name '*-x64.rpm')
+             AMD64DEB=$(find dist -name '*-x64.deb')
+             AMD64TARBALL=$(find dist -name '*-x64.tar.gz')
+             echo "AMD64APPIMAGE=$AMD64APPIMAGE" >> $GITHUB_ENV
+             echo "NAME_AMD64APPIMAGE=$(basename '$AMD64APPIMAGE')" >> $GITHUB_ENV
+             echo "AMD64RPM=$AMD64RPM" >> $GITHUB_ENV
+             echo "NAME_AMD64RPM=$(basename '$AMD64RPM')" >> $GITHUB_ENV
+             echo "AMD64DEB=$AMD64DEB" >> $GITHUB_ENV
+             echo "NAME_AMD64DEB=$(basename '$AMD64DEB')" >> $GITHUB_ENV
              echo "AMD64TARBALL=$(find dist -name '*-x64.tar.gz')" >> $GITHUB_ENV
-             echo "NAME_AMD64TARBALL=$(basename -s .tar.gz '${{ env.AMD64TARBALL }}')" >> $GITHUB_ENV
+             echo "NAME_AMD64TARBALL=$(basename '$AMD64TARBALL')" >> $GITHUB_ENV
       - name: build linux arm64
         run: pnpm build:linux-arm64
+             ARM64APPIMAGE=$(find dist -name '*-arm64.AppImage')
+             ARM64RPM=$(find dist -name '*-arm64.rpm')
+             ARM64DEB=$(find dist -name '*-arm64.deb')
+             ARM64TARBALL=$(find dist -name '*-arm64.tar.gz')
+             echo "ARM64APPIMAGE=$ARM64APPIMAGE" >> $GITHUB_ENV
+             echo "NAME_ARM64APPIMAGE=$(basename '$ARM64APPIMAGE')" >> $GITHUB_ENV
+             echo "ARM64RPM=$ARM64RPM" >> $GITHUB_ENV
+             echo "NAME_ARM64RPM=$(basename '$ARM64RPM')" >> $GITHUB_ENV
+             echo "ARM64DEB=$ARM64DEB" >> $GITHUB_ENV
+             echo "NAME_ARM64DEB=$(basename '$ARM64DEB')" >> $GITHUB_ENV
+             echo "ARM64TARBALL=$(find dist -name '*-arm64.tar.gz')" >> $GITHUB_ENV
+             echo "NAME_ARM64TARBALL=$(basename '$ARM64TARBALL')" >> $GITHUB_ENV
+             
              
         
       - name: Upload AMD64 APPIMAGE RELEASE
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ env.SHAMROCK_VERSION_ARM64 }}"
-          path: "${{ env.APK_FILE_ARM64 }}"
+          name: "${{ env.NAME_AMD64APPIMAGE }}"
+          path: "${{ env.AMD64APPIMAGE }}"
+      - name: Upload AMD64 RPM RELEASE
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_AMD64RPM }}"
+          path: "${{ env.AMD64RPM }}"
+      - name: Upload AMD64 DEB RELEASE
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_AMD64DEB }}"
+          path: "${{ env.AMD64DEB }}"
+      - name: Upload AMD64 TARBALL RELEASE
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_AMD64TARBALL }}"
+          path: "${{ env.AMD64TARBALL }}"
+        
+      - name: Upload ARM64 APPIMAGE RELEASE
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_ARM64APPIMAGE }}"
+          path: "${{ env.ARM64APPIMAGE }}"
+      - name: Upload ARM64 RPM RELEASE
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_ARM64RPM }}"
+          path: "${{ env.ARM64RPM }}"
+      - name: Upload ARM64 DEB RELEASE
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_ARM64DEB }}"
+          path: "${{ env.ARM64DEB }}"
+      - name: Upload ARM64 TARBALL RELEASE
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_ARM64TARBALL }}"
+          path: "${{ env.ARM64TARBALL }}"
       
