@@ -1,0 +1,39 @@
+name: Build/release
+
+on: push
+
+jobs:
+  BuildLinux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 20
+      - name: setup environment
+        run: npm install pnpm -g
+             pnpm install
+             
+      - name: build linux x64
+        run: pnpm build:linux
+             echo "AMD64APPIMAGE=$(find dist -name '*-x64.AppImage')" >> $GITHUB_ENV
+             echo "NAME_AMD64APPIMAGE=$(basename -s .AppImage '${{ env.AMD64APPIMAGE }}')" >> $GITHUB_ENV
+             echo "AMD64RPM=$(find dist -name '*-x64.rpm')" >> $GITHUB_ENV
+             echo "NAME_AMD64RPM=$(basename -s .rpm '${{ env.AMD64RPM }}')" >> $GITHUB_ENV
+             echo "AMD64DEB=$(find dist -name '*-x64.deb')" >> $GITHUB_ENV
+             echo "NAME_AMD64DEB=$(basename -s .deb '${{ env.AMD64DEB }}')" >> $GITHUB_ENV
+             echo "AMD64TARBALL=$(find dist -name '*-x64.tar.gz')" >> $GITHUB_ENV
+             echo "NAME_AMD64TARBALL=$(basename -s .tar.gz '${{ env.AMD64TARBALL }}')" >> $GITHUB_ENV
+      - name: build linux arm64
+        run: pnpm build:linux-arm64
+             
+        
+      - name: Upload AMD64 APPIMAGE RELEASE
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.SHAMROCK_VERSION_ARM64 }}"
+          path: "${{ env.APK_FILE_ARM64 }}"
+      
