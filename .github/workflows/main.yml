@@ -122,6 +122,7 @@ jobs:
       
       - name: setup wine
         run: rm -rf ~/.wine &&
+             mkdir ~/.wine &&
              mkdir ~/.wine/prefix &&
              export WINEPREFIX=~/.wine/prefix &&
              export WINEARCH=win32 &&
