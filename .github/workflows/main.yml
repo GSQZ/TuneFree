@@ -21,7 +21,7 @@ jobs:
       - name: build linux x64
         run: pnpm build:linux
         env: |
-          GH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          GITHUB_TOKEN : ${{ secrets.ACCESS_TOKEN }}
       - name: reg linux x64 builds
         run: AMD64APPIMAGE=$(find dist -name '*-x64.AppImage')
              AMD64RPM=$(find dist -name '*-x64.rpm')
@@ -38,7 +38,7 @@ jobs:
       - name: build linux arm64
         run: pnpm build:linux-arm64
         env: |
-          GH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          GITHUB_TOKEN : ${{ secrets.ACCESS_TOKEN }}
       - name: reg linux arm64 builds
         run: ARM64APPIMAGE=$(find dist -name '*-arm64.AppImage')
              ARM64RPM=$(find dist -name '*-arm64.rpm')
