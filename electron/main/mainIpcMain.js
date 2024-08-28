@@ -185,6 +185,16 @@ const mainIpcMain = (
     }
   });
 
+  // 粘贴
+  ipcMain.handle("getClipboard", async (_) => {
+    try {
+      return await clipboard.readText("clipboard");
+    } catch (error) {
+      console.error("粘贴操作出错：", error);
+      return false;
+    }
+  });
+
   // 本地磁盘文件删除
   ipcMain.handle("deleteFile", async (_, path) => {
     try {

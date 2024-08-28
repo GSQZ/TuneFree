@@ -84,6 +84,43 @@ export const getLocalCoverData = async (path, isAlbum = false) => {
   }
 };
 
+export const getClipboard = async () => {
+  try {
+    const isElectron = checkPlatform.electron();
+    // electron
+    if (isElectron) {
+      const result = electron.ipcRenderer.invoke("getClipboard");
+      return result;
+    }
+    // 浏览器端
+    else {
+      if (navigator.clipboard) {
+        try {
+          return await navigator.clipboard.readText();
+        } catch (error) {
+          console.error("粘贴出错：", error);
+        }
+      } else {
+        // 如果浏览器不支持 navigator.clipboard
+        const textArea = document.createElement("textarea");
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          const successful = document.execCommand("paste");
+          if (successful) return textArea.value;
+        } catch (err) {
+          console.error("粘贴出错：", err);
+        } finally {
+          document.body.removeChild(textArea);
+        }
+      }
+    }
+  } catch (error) {
+    console.error("粘贴出错：", error);
+  }
+  return false;
+};
+
 /**
  * 内容复制
  */
