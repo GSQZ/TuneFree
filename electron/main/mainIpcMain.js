@@ -74,13 +74,7 @@ const mainIpcMain = (
     win.setProgressBar(val / 100);
   });
 
-  ipcMain.on("setDownloadLyricsToFile", (_, val) => {
-    if (val === "close") {
-      win.setProgressBar(-1);
-      return false;
-    }
-    win.setProgressBar(val / 100);
-  });
+
 
   // 解灰
   ipcMain.handle("getMusicNumUrl", async (_, data) => {
