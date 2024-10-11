@@ -38,7 +38,11 @@
       <n-text v-else>歌曲信息获取中</n-text>
     </Transition>
     <template #footer>
-      <n-flex justify="end">
+      <n-flex justify="end" :class="{ setting: true }">
+        <div class="name">以文件形式保存歌词</div>
+        <n-switch v-model:value="downloadLyricsToFile" :round="false" />
+        <div class="name">以文件形式保存封面</div>
+        <n-switch v-model:value="downloadCoverToFile" :round="false" />
         <n-button @click="closeDownloadModal"> 关闭 </n-button>
         <n-button
           :disabled="!downloadChoose"
@@ -67,7 +71,14 @@ const router = useRouter();
 const data = siteData();
 const settings = siteSettings();
 const { userData } = storeToRefs(data);
-const { downloadPath, downloadMeta, downloadCover, downloadLyrics } = storeToRefs(settings);
+const {
+  downloadPath,
+  downloadMeta,
+  downloadCover,
+  downloadLyrics,
+  downloadLyricsToFile,
+  downloadCoverToFile,
+} = storeToRefs(settings);
 
 // 歌曲下载数据
 const songId = ref(null);
@@ -119,6 +130,8 @@ const toSongDownload = async (song, lyric, br) => {
       downloadMeta: downloadMeta.value,
       downloadCover: downloadCover.value,
       downloadLyrics: downloadLyrics.value,
+      downloadCoverToFile: downloadCoverToFile.value,
+      downloadLyricsToFile: downloadLyricsToFile.value,
     });
     console.log(lyric);
     if (isDownloaded) {

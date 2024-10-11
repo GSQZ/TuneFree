@@ -13,6 +13,7 @@
       @focus="searchInputToFocus"
       @keyup.enter="toSearch(searchInputValue)"
       @click.stop
+      @click.right="searchDropdownRef?.openDropdown($event)"
     >
       <template #prefix>
         <n-icon>
@@ -36,6 +37,7 @@
       @toSearch="toSearch"
       @closeSearch="closeSearch"
     />
+    <SearchDropdown ref="searchDropdownRef" @toSearch="toSearch" @input="input" />
   </div>
 </template>
 
@@ -47,6 +49,7 @@ import { getSearchDefault } from "@/api/search";
 import { siteData, siteStatus, musicData } from "@/stores";
 import { addSongToNext, initPlayer } from "@/utils/Player";
 import formatData from "@/utils/formatData";
+import SearchDropdown from "./SearchDropdown.vue";
 
 const router = useRouter();
 const music = musicData();
@@ -62,6 +65,12 @@ const searchInputValue = ref("");
 const searchInterval = ref(null);
 const searchRealkeyword = ref(null);
 const searchPlaceholder = ref("搜索音乐 / 视频");
+
+// 右键菜单
+const searchDropdownRef = ref(null);
+const input = (content) => {
+  searchInputValue.value = content;
+};
 
 // 搜索框输入限制
 const noSideSpace = (value) => !value.startsWith(" ");
@@ -192,6 +201,7 @@ const toSearch = (val, type = "song") => {
   }
 };
 
+
 onMounted(() => {
   changePlaceholder();
 });
@@ -205,14 +215,17 @@ onBeforeUnmount(() => {
 .search-input {
   position: relative;
   -webkit-app-region: no-drag;
+
   .input {
     width: 200px;
     z-index: 11;
     transition: width 0.3s;
+
     &.focus {
       width: 300px;
     }
   }
+
   .search-mask {
     position: fixed;
     top: 0;
@@ -224,16 +237,20 @@ onBeforeUnmount(() => {
     backdrop-filter: blur(20px);
     -webkit-app-region: no-drag;
   }
+
   @media (max-width: 700px) {
     width: 100%;
     margin-right: 12px;
+
     .input {
       width: 100%;
+
       &.focus {
         width: 100%;
       }
     }
   }
+
   @media (max-width: 512px) {
     .search-mask {
       background-color: transparent;

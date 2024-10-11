@@ -21,9 +21,11 @@
     "dev": "electron-vite dev --watch",
     "build": "electron-vite build",
     "postinstall": "electron-builder install-app-deps",
-    "build:win": "npm run build && electron-builder --win --config",
-    "build:mac": "npm run build && electron-builder --mac --config",
-    "build:linux": "npm run build && electron-builder --linux --config"
+    "build:win": "npm run build && electron-builder --win --config --publish never",
+    "build:win-arm64": "npm run build && electron-builder --win --arm64 --config --publish never",
+    "build:mac": "npm run build && electron-builder --mac --config --publish never",
+    "build:linux": "npm run build && electron-builder --linux --config --publish never",
+    "build:linux-arm64": "npm run build && electron-builder --linux --arm64 --config --publish never"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
@@ -48,7 +50,8 @@
     "plyr": "^3.7.8",
     "screenfull": "^6.0.2",
     "vue-router": "^4.2.5",
-    "vue-slider-component": "4.1.0-beta.7"
+    "vue-slider-component": "4.1.0-beta.7",
+    "jszip": "3.10.1"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.2",
@@ -71,6 +74,7 @@
     "vite": "^5.0.12",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-pwa": "^0.17.4",
-    "vue": "3.4.8"
+    "vue": "3.4.8",
+    "jszip": "3.10.1"
   }
 }

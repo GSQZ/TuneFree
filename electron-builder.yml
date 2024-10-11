@@ -29,7 +29,7 @@ nsis:
   # 一键式安装程序还是辅助安装程序
   oneClick: false
   # 安装程序的生成名称
-  artifactName: ${productName}-${version}-setup.${ext}
+  artifactName: ${productName}-${version}-${arch}-setup.${ext}
   # 创建的桌面快捷方式名称
   shortcutName: ${productName}
   # 卸载时显示的名称
@@ -82,9 +82,6 @@ linux:
   maintainer: imsyy.top
   # 应用程序类别
   category: Audio;Music
-# AppImage 配置
-appImage:
-  #  AppImage 文件的生成名称
-  artifactName: ${productName}-${version}.${ext}
+  artifactName: ${productName}-${version}-${arch}.${ext}
 # 是否在构建之前重新编译原生模块
 npmRebuild: false

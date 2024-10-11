@@ -1,3 +1,4 @@
+import JSZip from "jszip";
 // BlobUrl
 let lastSongBlobUrl = null;
 let lastCoverBlobUrl = null;
@@ -81,6 +82,43 @@ export const getLocalCoverData = async (path, isAlbum = false) => {
     console.error("获取本地音乐封面出错：", error);
     throw error;
   }
+};
+
+export const getClipboard = async () => {
+  try {
+    const isElectron = checkPlatform.electron();
+    // electron
+    if (isElectron) {
+      const result = electron.ipcRenderer.invoke("getClipboard");
+      return result;
+    }
+    // 浏览器端
+    else {
+      if (navigator.clipboard) {
+        try {
+          return await navigator.clipboard.readText();
+        } catch (error) {
+          console.error("粘贴出错：", error);
+        }
+      } else {
+        // 如果浏览器不支持 navigator.clipboard
+        const textArea = document.createElement("textarea");
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          const successful = document.execCommand("paste");
+          if (successful) return textArea.value;
+        } catch (err) {
+          console.error("粘贴出错：", err);
+        } finally {
+          document.body.removeChild(textArea);
+        }
+      }
+    }
+  } catch (error) {
+    console.error("粘贴出错：", error);
+  }
+  return false;
 };
 
 /**
@@ -321,12 +359,31 @@ export const downloadFile = async (data, song, lyric, options) => {
       if (lastDownloadBlobUrl) URL.revokeObjectURL(lastDownloadBlobUrl);
       const songRes = await fetch(data?.url.replace(/^http:/, "https:"));
       if (!songRes.ok) throw new Error("下载出错，请重试");
-      const blob = await songRes.blob();
+      let blob = await songRes.blob();
+      let songFileName = `${songName}.${songType}`;
+      let zipFile = null;
+      if (options.downloadCoverToFile || options.downloadLyricsToFile) {
+        zipFile = new JSZip();
+        zipFile.file(songFileName, blob);
+      }
+      if (options.downloadCover && options.downloadCoverToFile) {
+        const coverRes = await fetch(song.cover);
+        if (!coverRes.ok) throw new Error("下载出错，请重试");
+        const coverBlob = await coverRes.blob();
+        zipFile.file(songName + ".jpg", coverBlob);
+      }
+      if (options.downloadLyrics && options.downloadLyricsToFile) {
+        zipFile.file(songName + ".lrc", lyric);
+      }
+      if (zipFile) {
+        blob = await zipFile.generateAsync({ type: 'blob' });
+        songFileName = `${songName}.zip`;
+      }
       lastDownloadBlobUrl = URL.createObjectURL(blob);
       // 下载数据
       const a = document.createElement("a");
       a.href = lastDownloadBlobUrl;
-      a.download = `${songName}.${songType}`;
+      a.download = songFileName;
       document.body.appendChild(a);
       a.click();
       a.remove();
