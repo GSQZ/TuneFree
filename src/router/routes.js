@@ -136,7 +136,7 @@ const routes = [
     name: "cloud",
     meta: {
       title: "我的云盘",
-      needLogin: true,
+      keepAlive: true,
     },
     component: () => import("@/views/Cloud.vue"),
   },
@@ -285,16 +285,7 @@ const routes = [
     },
     component: () => import("@/views/Dj/index.vue"),
   },
-    // 赞助者
-    {
-      path: "/Sponsors",
-      name: "Sponsors",
-      meta: {
-        title: "赞赏列表",
-      },
-      component: () => import("@/views/Sponsors/index.vue"),
-    },
-      // 首页
+  // 桌面歌词
   {
     path: "/lyric",
     name: "lyric",
@@ -320,15 +311,6 @@ const routes = [
       title: "全局设置",
     },
     component: () => import("@/views/Setting/index.vue"),
-  },
-  // 单曲页面
-  {
-    path: "/song",
-    name: "song",
-    meta: {
-      title: "全局设置",
-    },
-    component: () => import("@/views/Song.vue"),
   },
   // 测试页面
   {
