@@ -7,36 +7,32 @@
     :bordered="false"
     :close-on-esc="false"
     :closable="false"
-    style="width: 400px"
+    style="width: 340px"
     preset="card"
     transform-origin="center"
+    class="login-modal"
   >
     <div class="login-content">
-      <div class="title">
+      <div class="header">
         <img class="logo" src="/images/icons/favicon.png?asset" alt="logo" />
+        <div class="text">
+          <h2>TuneFree</h2>
+          <p>授权码登录</p>
+        </div>
       </div>
-      <!-- 登录方式 -->
-      <n-tabs class="login-tabs" default-value="login-qr" type="segment" animated>
-        <n-tab-pane name="login-qr" tab="扫码登录">
-          <loginQRCode @setLoginData="setLoginData" />
-        </n-tab-pane>
-        <n-tab-pane name="login-phone" tab="验证码登录">
-          <loginPhone @setLoginData="setLoginData" />
-        </n-tab-pane>
-      </n-tabs>
-      <!-- 关闭登录弹窗 -->
+      
+      <div class="login-form">
+        <loginPhone @setLoginData="setLoginData" />
+      </div>
+
       <n-button
-        :focusable="false"
-        class="close"
-        strong
-        secondary
-        round
+        class="close-btn"
+        quaternary
+        circle
         @click="(loginModalShow = false), toLogout(false)"
       >
         <template #icon>
-          <n-icon :depth="2">
-            <SvgIcon icon="window-close" />
-          </n-icon>
+          <n-icon><SvgIcon icon="window-close" /></n-icon>
         </template>
       </n-button>
     </div>
@@ -98,19 +94,29 @@ const setLoginData = async (loginData) => {
 };
 
 // 刷新登录
-const toRefreshLogin = () => {
+const toRefreshLogin = async () => {
   const today = Date.now();
   const threeDays = 3 * 24 * 60 * 60 * 1000;
   const lastRefreshDate = new Date(localStorage.getItem("lastRefreshDate")).getTime();
+  
   if (today - lastRefreshDate >= threeDays || !lastRefreshDate) {
-    refreshLogin().then((res) => {
+    try {
+      const res = await refreshLogin();
       if (res.code === 200) {
         localStorage.setItem("lastRefreshDate", new Date(today).toLocaleDateString());
-        console.log("刷新登录成功：", res);
+        // 如果返回了新的cookie，则更新
+        if (res.cookie) {
+          setCookies(res.cookie);
+        }
+        console.log("刷新登录成功");
       } else {
-        console.error("刷新登录失败");
+        console.warn("刷新登录返回异常:", res);
       }
-    });
+    } catch (error) {
+      console.warn("刷新登录失败，将在下次启动时重试");
+      // 清除上次刷新时间，确保下次启动时重试
+      localStorage.removeItem("lastRefreshDate");
+    }
   }
 };
 
@@ -161,29 +167,76 @@ onBeforeMount(() => {
 </script>
 
 <style lang="scss">
+.login-modal {
+  .n-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
+
 .login-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  .title {
-    width: 60px;
-    height: 60px;
-    margin: 20px 0 30px 0;
+  position: relative;
+  padding: 0;
+
+  .header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background: var(--primary-color);
+    margin: -16px -16px 16px -16px;
+
     .logo {
-      width: 100%;
-      height: 100%;
+      width: 36px;
+      height: 36px;
+      margin-right: 12px;
+    }
+
+    .text {
+      color: #fff;
+
+      h2 {
+        font-size: 18px;
+        font-weight: 500;
+        margin: 0;
+        line-height: 1.2;
+      }
+
+      p {
+        font-size: 13px;
+        margin: 2px 0 0;
+        opacity: 0.9;
+      }
     }
   }
-  .close {
+
+  .login-form {
+    padding: 0 20px 20px;
+  }
+
+  .close-btn {
     position: absolute;
-    bottom: -58px;
-    background-color: var(--n-color-modal);
+    right: 8px;
+    top: 8px;
+    width: 32px;
+    height: 32px;
+    color: rgba(255, 255, 255, 0.9);
+    transition: all 0.2s ease;
+
     &:hover {
-      background-color: var(--n-color-embedded);
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
     }
-    &:active {
-      background-color: var(--n-color-embedded);
+
+    .n-icon {
+      font-size: 16px;
     }
+  }
+}
+
+:root[theme-mode="dark"] {
+  .login-modal .n-card {
+    background: var(--n-color-modal);
   }
 }
 </style>

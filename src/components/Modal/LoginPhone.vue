@@ -1,149 +1,116 @@
-<!-- 登录 - 手机号 -->
+<!-- 授权码登录 -->
 <template>
-  <div class="login-phone">
+  <div class="login-auth">
     <n-form
-      ref="phoneFormRef"
-      :model="phoneFormData"
-      :rules="phoneFormRules"
+      ref="authFormRef"
+      :model="authFormData"
+      :rules="authFormRules"
       :show-label="false"
-      class="phone-form"
     >
-      <n-form-item path="phone">
-        <n-input v-model:value="phoneFormData.phone" placeholder="请输入手机号">
-          <template #prefix>
-            <n-icon>
-              <SvgIcon icon="phone" />
-            </n-icon>
-          </template>
-        </n-input>
-      </n-form-item>
-      <n-form-item path="captcha">
-        <n-input-number
-          v-model:value="phoneFormData.captcha"
-          :show-button="false"
-          style="width: 100%"
-          placeholder="请输入短信验证码"
-        >
-          <template #prefix>
-            <n-icon>
-              <SvgIcon icon="password" />
-            </n-icon>
-          </template>
-        </n-input-number>
-        <n-button
-          :disabled="captchaDisabled"
-          type="primary"
-          style="margin-left: 12px"
-          @click="getCaptcha(phoneFormData.phone)"
-        >
-          {{ captchaText }}
-        </n-button>
+      <n-form-item path="authCode">
+        <n-input
+          v-model:value="authFormData.authCode"
+          placeholder="请输入授权码"
+          :maxlength="32"
+          clearable
+          @keyup.enter="handleLogin"
+        />
       </n-form-item>
       <n-form-item>
-        <n-button style="width: 100%" type="primary" @click="phoneLogin"> 登录 </n-button>
+        <n-button 
+          type="primary" 
+          block 
+          :loading="loading"
+          @click="handleLogin"
+        >
+          {{ loading ? '登录中...' : '登录' }}
+        </n-button>
       </n-form-item>
     </n-form>
   </div>
 </template>
 
 <script setup>
-import { sentCaptcha, verifyCaptcha, toLogin } from "@/api/login";
-import { formRules } from "@/utils/formRules";
+import { toLogin } from "@/api/login";
 
 const emit = defineEmits(["setLoginData"]);
-const { numberRule, mobileRule } = formRules();
+const loading = ref(false);
 
-// 手机号数据
-const phoneFormRef = ref(null);
-const phoneFormData = ref({
-  phone: null,
-  captcha: null,
+// 授权码表单
+const authFormRef = ref(null);
+const authFormData = ref({
+  authCode: null
 });
-const phoneFormRules = {
-  phone: mobileRule,
-  captcha: numberRule,
-};
-const captchaTimeOut = ref(null);
-const captchaText = ref("获取验证码");
-const captchaDisabled = ref(false);
 
-// 获取验证码
-const getCaptcha = (phone) => {
-  clearInterval(captchaTimeOut.value);
-  phoneFormRef.value?.validate(
-    async (errors) => {
-      if (!errors) {
-        console.log(phone + "发送验证码");
-        const result = await sentCaptcha(phone);
-        console.log(result);
-        if (result.code == 200) {
-          $message.success("验证码发送成功");
-          let countDown = 60;
-          captchaDisabled.value = true;
-          captchaTimeOut.value = setInterval(() => {
-            countDown--;
-            captchaText.value = countDown + "s";
-            if (countDown === 0) {
-              clearInterval(captchaTimeOut.value);
-              captchaText.value = "重新获取";
-              captchaDisabled.value = false;
-            }
-          }, 1000);
-        } else {
-          $message.error("验证码发送失败，请重试");
-        }
-      } else {
-        $message.error("请检查你的输入");
-      }
-    },
-    (rule) => {
-      return rule?.key === "phone";
-    },
-  );
+// 验证规则
+const authFormRules = {
+  authCode: {
+    required: true,
+    message: "请输入授权码",
+    trigger: ["blur", "input"]
+  }
 };
 
-// 手机号登录
-const phoneLogin = (e) => {
+// 登录处理
+const handleLogin = async (e) => {
+  if (e?.preventDefault) e.preventDefault();
+  if (loading.value) return;
+
   try {
-    e.preventDefault();
-    phoneFormRef.value?.validate(async (errors) => {
-      if (!errors) {
-        const verifyRes = await verifyCaptcha(
-          phoneFormData._value.phone,
-          phoneFormData._value.captcha,
-        );
-        console.log(verifyRes);
-        if (verifyRes.code == 200) {
-          const result = await toLogin(phoneFormData._value.phone, phoneFormData._value.captcha);
-          console.log(result);
-          if (result.code === 200) {
-            // 去除 HTTPOnly
-            result.cookie = result.cookie.replaceAll(" HTTPOnly", "");
-            // 是否含有 MUSIC_U
-            if (result.cookie && result.cookie.includes("MUSIC_U")) {
-              // 储存登录信息
-              emit("setLoginData", result);
-            } else {
-              $message.error("登录出错，请重试");
-            }
-          }
-        }
+    const valid = await authFormRef.value?.validate();
+    if (valid) {
+      loading.value = true;
+      const result = await toLogin(authFormData.value.authCode);
+      if (result.code === 200) {
+        emit("setLoginData", result);
       } else {
-        $message.error("请检查你的输入");
+        $message.error(result.message || "授权码无效");
       }
-    });
+    }
   } catch (error) {
-    phoneFormData.value.captcha = null;
-    console.error("登录出错：", error);
-    $message.error("登录出错，请重试");
+    console.error("登录失败：", error);
+    $message.error("登录失败，请重试");
+  } finally {
+    loading.value = false;
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.login-phone {
-  .phone-form {
-    margin-top: 20px;
+.login-auth {
+  .n-form {
+    :deep(.n-form-item) {
+      margin-bottom: 16px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .n-input .n-input__border,
+      .n-input .n-input__state-border {
+        border-radius: 2px;
+      }
+
+      .n-button {
+        border-radius: 2px;
+        height: 36px;
+      }
+    }
+  }
+}
+
+// 暗色主题适配
+:root[theme-mode="dark"] {
+  .login-auth {
+    .auth-input {
+      :deep(.n-input) {
+        .n-input-wrapper {
+          background: var(--n-color-input-dark, rgba(255, 255, 255, 0.05));
+        }
+      }
+    }
   }
 }
 </style>
+
+
