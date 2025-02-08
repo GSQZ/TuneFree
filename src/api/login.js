@@ -53,21 +53,31 @@ export const checkQr = (key) => {
 };
 
 /**
- * 手机号登录
- * @param {string} phone 手机号码
- * @param {string} captcha 验证码
+ * 登录
+ * @param {string} code 授权码
  */
-export const toLogin = (phone, captcha) => {
-  return axios({
-    method: "GET",
-    noCookie: true,
-    url: "/login/cellphone",
-    params: {
-      phone,
-      captcha,
-      timestamp: new Date().getTime(),
-    },
-  });
+export const toLogin = async (code) => {
+  try {
+    const response = await fetch(`https://auth.sayqz.com/?path=info&code=${code}`);
+    const data = await response.json();
+    
+    if (data.code === 200 && data.data) {
+      return {
+        code: 200,
+        cookie: data.data.netease_cookie
+      };
+    }
+    return {
+      code: data.code,
+      message: data.message
+    };
+  } catch (error) {
+    console.error('登录请求失败:', error);
+    return {
+      code: 500,
+      message: '登录失败，请重试'
+    };
+  }
 };
 
 /**
