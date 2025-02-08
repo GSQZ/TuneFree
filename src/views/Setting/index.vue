@@ -40,7 +40,7 @@
       <div class="set-type">
         <n-h3 prefix="bar"> 常规 </n-h3>
         <n-card class="set-item">
-            <div class="name">如果您喜欢我们的服务，可以对我们进行赞赏！<n-text class="tip">我们承诺，TuneFree永久免费，不会接取广告或进行收费！</n-text></div>
+            <div class="name">如果您喜欢我们的服务，可以对我们进行赞赏！<n-text class="tip">我们承诺，TuneFree永久免费。</n-text></div>
 
             <div class="donate-link">
                 <a href="https://afdian.net/a/sayqz" target="_blank"><img width="200" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.png" alt=""></a >
@@ -655,35 +655,45 @@ const setTabsValue = ref("setTab1");
 
 //更新
 const isNewVersion = (currentVersion, newVersion) => {
-  // 简单版本号比较逻辑，实际逻辑可能需要更复杂的比较
-  return newVersion.localeCompare(currentVersion) === 1;
+  const current = currentVersion.split('.').map(Number);
+  const next = newVersion.split('.').map(Number);
+  
+  for (let i = 0; i < 3; i++) {
+    if (next[i] > current[i]) return true;
+    if (next[i] < current[i]) return false;
+  }
+  return false;
 };
-const toUpdate = () => {
-  axios.get('https://api.tunefree.fun/update/')
-    .then(response => {
-      const newVersion = response.newVersion;
-      const downloadUrl = response.downloadUrl;
-      const currentVersion = packageJson.version; // 这里应用当前的版本号，或者通过其他方式获取
-      console.log(packageJson.version)
-      console.log(666)
+
+const toUpdate = async () => {
+  try {
+    const response = await fetch('https://auth.sayqz.com/?path=app/info&platform=pc');
+    const data = await response.json();
+    
+    if (data.code === 200 && data.data) {
+      const newVersion = data.data.version;
+      const currentVersion = packageJson.version;
+      
       if (isNewVersion(currentVersion, newVersion)) {
         $dialog.info({
-          title: "TuneFree发布更新啦！🎉",
-          content: `我们的音乐之旅即将迈入新的乐章！ ${newVersion} 版本带着未曾有过的和声与节拍登场了。立即更新，让我们和新旋律一起自由起舞吧！`,
-          positiveText: "即刻升级",
-          negativeText: "下次再说",
+          title: "发现新版本",
+          content: data.data.announcement.replace(/\\n/g, '\n'),
+          positiveText: "立即更新",
+          negativeText: "稍后再说",
           onPositiveClick: () => {
-            window.open(downloadUrl, '_blank');
+            window.open(data.data.update_url, '_blank');
           }
         });
       } else {
-        $message.success('您当前的音乐体验已经是最高级了，无需升级。');
+        $message.success('当前已是最新版本');
       }
-    })
-    .catch(error => {
-      console.error('更新乐章加载失败：', error);
-      $message.error('更新检测出小调，请稍后重试。');
-    });
+    } else {
+      throw new Error(data.message || '检查更新失败');
+    }
+  } catch (error) {
+    console.error('检查更新失败:', error);
+    $message.error('检查更新失败，请稍后重试');
+  }
 };
 
 // 基础数据
