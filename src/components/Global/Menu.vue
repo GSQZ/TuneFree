@@ -144,20 +144,6 @@ const menuOptions = computed(() => [
     icon: renderIcon("record"),
   },
   {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: {
-            name: "Sponsors",
-          },
-        },
-        () => ["赞赏列表"],
-      ),
-    key: "Sponsors",
-    icon: renderIcon("sponsor"),
-  },
-  {
     key: "divider-1",
     type: "divider",
   },
