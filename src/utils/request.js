@@ -21,7 +21,11 @@ axios.interceptors.request.use(
       if (!request.params) request.params = {};
       // 附加 cookie
       if (!request.noCookie && (isLogin() || getCookie("MUSIC_U") !== null)) {
-        request.params.cookie = `MUSIC_U=${getCookie("MUSIC_U")};`;
+        request.params.cookie = `MUSIC_U=${getCookie("MUSIC_U")}`;
+        // 对于非 auth.sayqz.com 的请求，添加分号
+        if (!request.url.startsWith('https://auth.sayqz.com')) {
+          request.params.cookie += ';';
+        }
       }
       // 附加 realIP
       if (!checkPlatform.electron()) request.params.realIP = "116.25.146.177";
