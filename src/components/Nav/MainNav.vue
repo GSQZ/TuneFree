@@ -95,7 +95,7 @@ const { asideMenuCollapsed, searchInputFocus } = storeToRefs(status);
 const { showGithub, showSider, themeAutoCover } = storeToRefs(settings);
 
 // 站点信息
-const siteName = import.meta.env.RENDERER_VITE_SITE_TITLE;
+const siteName = "TuneFree";
 
 // 打开 GitHub
 const openGithub = () => {
