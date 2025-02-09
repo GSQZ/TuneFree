@@ -38,17 +38,17 @@ jobs:
       armv7l: ${{ steps.step3.outputs.armv7l }}
     steps:
       - id: step1
-        run: if [ ${{inputs.platform}} == 'windows' || ${{inputs.platform}} == 'all' ]; then echo "windows=1" >> "$GITHUB_OUTPUT" ; else echo "windows=0" >> "$GITHUB_OUTPUT" ; fi
+        run: if [[ ${{inputs.platform}} == 'windows' || ${{inputs.platform}} == 'all' ]]; then echo "windows=1" >> "$GITHUB_OUTPUT" ; else echo "windows=0" >> "$GITHUB_OUTPUT" ; fi
       - id: step2
-        run: if [ ${{inputs.platform}} == 'linux' || ${{inputs.platform}} == 'all' ]; then echo "linux=1" >> "$GITHUB_OUTPUT" ; else echo "linux=0" >> "$GITHUB_OUTPUT" ; fi
+        run: if [[ ${{inputs.platform}} == 'linux' || ${{inputs.platform}} == 'all' ]]; then echo "linux=1" >> "$GITHUB_OUTPUT" ; else echo "linux=0" >> "$GITHUB_OUTPUT" ; fi
       - id: step3
-        run: if [ ${{inputs.arch}} == 'x86_64' || ${{inputs.arch}} == 'all' ]; then echo "x86_64=1" >> "$GITHUB_OUTPUT" ; else echo "x86_64=0" >> "$GITHUB_OUTPUT" ; fi
+        run: if [[ ${{inputs.arch}} == 'x86_64' || ${{inputs.arch}} == 'all' ]]; then echo "x86_64=1" >> "$GITHUB_OUTPUT" ; else echo "x86_64=0" >> "$GITHUB_OUTPUT" ; fi
       - id: step4
-        run: if [ ${{inputs.arch}} == 'x86' || ${{inputs.arch}} == 'all' ]; then echo "x86=1" >> "$GITHUB_OUTPUT" ; else echo "x86=0" >> "$GITHUB_OUTPUT" ; fi
+        run: if [[ ${{inputs.arch}} == 'x86' || ${{inputs.arch}} == 'all' ]]; then echo "x86=1" >> "$GITHUB_OUTPUT" ; else echo "x86=0" >> "$GITHUB_OUTPUT" ; fi
       - id: step5
-        run: if [ ${{inputs.arch}} == 'arm64' || ${{inputs.arch}} == 'all' ]; then echo "arm64=1" >> "$GITHUB_OUTPUT" ; else echo "arm64=0" >> "$GITHUB_OUTPUT" ; fi
+        run: if [[ ${{inputs.arch}} == 'arm64' || ${{inputs.arch}} == 'all' ]]; then echo "arm64=1" >> "$GITHUB_OUTPUT" ; else echo "arm64=0" >> "$GITHUB_OUTPUT" ; fi
       - id: step6
-        run: if [ ${{inputs.arch}} == 'armv7l' || ${{inputs.arch}} == 'all' ]; then echo "armv7l=1" >> "$GITHUB_OUTPUT" ; else echo "armv7l=0" >> "$GITHUB_OUTPUT" ; fi
+        run: if [[ ${{inputs.arch}} == 'armv7l' || ${{inputs.arch}} == 'all' ]]; then echo "armv7l=1" >> "$GITHUB_OUTPUT" ; else echo "armv7l=0" >> "$GITHUB_OUTPUT" ; fi
       
 
 
