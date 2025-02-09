@@ -33,9 +33,9 @@ jobs:
       windows: ${{ steps.step1.outputs.windows }}
       linux: ${{ steps.step2.outputs.linux }}
       x86_64: ${{ steps.step3.outputs.x86_64 }}
-      x86: ${{ steps.step3.outputs.x86 }}
-      arm64: ${{ steps.step3.outputs.arm64 }}
-      armv7l: ${{ steps.step3.outputs.armv7l }}
+      x86: ${{ steps.step4.outputs.x86 }}
+      arm64: ${{ steps.step5.outputs.arm64 }}
+      armv7l: ${{ steps.step6.outputs.armv7l }}
     steps:
       - id: step1
         run: if [[ ${{inputs.platform}} == 'windows' || ${{inputs.platform}} == 'all' ]]; then echo "windows=1" >> "$GITHUB_OUTPUT" ; else echo "windows=0" >> "$GITHUB_OUTPUT" ; fi
