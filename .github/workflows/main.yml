@@ -55,7 +55,7 @@ jobs:
         run: $EXE="node\$(Get-Childitem -Path dist -Include *.exe -Name -File)" ;
              $NAME=(get-item "dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)").BaseName ;
              echo EXE=$EXE >> $env:GITHUB_ENV ;
-             echo NAME=$NAME >> $env:$GITHUB_ENV
+             echo NAME=$NAME >> $env:GITHUB_ENV
       - name: Upload EXE RELEASE
         uses: actions/upload-artifact@v4
         with:
