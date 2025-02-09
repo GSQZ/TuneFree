@@ -52,7 +52,7 @@ jobs:
         if: inputs.arch == 'armv7l'
         run: npm run build && pnpm electron-builder --win --armv7l --config --publish never
       - name: reg windows builds
-        run: $EXE="node\$(Get-Childitem -Path dist -Include *.exe -Name -File)" ;
+        run: $EXE="dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)" ;
              $NAME=(get-item "dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)").BaseName ;
              echo EXE=$EXE >> $env:GITHUB_ENV ;
              echo NAME=$NAME >> $env:GITHUB_ENV
