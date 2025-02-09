@@ -165,55 +165,9 @@ jobs:
       
       - name: build x86
         if: needs.Build.outputs.x86 == 1
-        run: npm run build && pnpm electron-builder --linux --ia32 --config --publish never
+        run: echo "no x86 support for linux"
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
-      - name: reg linux x86 builds
-        if: needs.Build.outputs.x86 == 1
-        run: |
-          APPIMAGE=$(find dist -name "*.AppImage") &&
-          RPM=$(find dist -name "*.rpm") &&
-          DEB=$(find dist -name "*.deb") &&
-          TARBALL=$(find dist -name "*.tar.gz") &&
-          NAME_APPIMAGE=$(basename "${APPIMAGE}") &&
-          NAME_RPM=$(basename "${RPM}") &&
-          NAME_DEB=$(basename "${DEB}") &&
-          NAME_TARBALL=$(basename "${TARBALL}") &&
-          echo "APPIMAGE=${APPIMAGE}" >> $GITHUB_ENV &&
-          echo "NAME_APPIMAGE=${NAME_APPIMAGE}" >> $GITHUB_ENV &&
-          echo "RPM=${RPM}" >> $GITHUB_ENV &&
-          echo "NAME_RPM=${NAME_RPM}" >> $GITHUB_ENV &&
-          echo "DEB=${DEB}" >> $GITHUB_ENV &&
-          echo "NAME_DEB=${NAME_DEB}" >> $GITHUB_ENV &&
-          echo "TARBALL=${TARBALL}" >> $GITHUB_ENV &&
-          echo "NAME_TARBALL=${NAME_TARBALL}" >> $GITHUB_ENV
-      - name: Upload APPIMAGE RELEASE
-        if: needs.Build.outputs.x86 == 1
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.NAME_APPIMAGE }}"
-          path: "${{ env.APPIMAGE }}"
-      - name: Upload RPM RELEASE
-        if: needs.Build.outputs.x86 == 1
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.NAME_RPM }}"
-          path: "${{ env.RPM }}"
-      - name: Upload DEB RELEASE
-        if: needs.Build.outputs.x86 == 1
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.NAME_DEB }}"
-          path: "${{ env.DEB }}"
-      - name: Upload TARBALL RELEASE
-        if: needs.Build.outputs.x86 == 1
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.NAME_TARBALL }}"
-          path: "${{ env.TARBALL }}"
-      - name: clean dist
-        if: needs.Build.outputs.x86 == 1
-        run: rm -rf dist
       
       - name: build x86_64
         if: needs.Build.outputs.x86_64 == 1
