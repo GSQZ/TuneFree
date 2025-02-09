@@ -87,7 +87,7 @@ jobs:
           path: "${{ env.EXE }}"
       - name: clean dist
         if: needs.Build.outputs.x86 == 1
-        run: rm dist
+        run: rm dist -Recurse -Force
 
       - name: build x86_64
         if: needs.Build.outputs.x86_64 == 1
@@ -106,7 +106,7 @@ jobs:
           path: "${{ env.EXE }}"
       - name: clean dist
         if: needs.Build.outputs.x86_64 == 1
-        run: rm dist
+        run: rm dist -Recurse -Force
 
       - name: build arm64
         if: needs.Build.outputs.arm64 == 1
@@ -125,7 +125,7 @@ jobs:
           path: "${{ env.EXE }}"
       - name: clean dist
         if: needs.Build.outputs.arm64 == 1
-        run: rm dist
+        run: rm dist -Recurse -Force
 
       - name: build armv7l
         if: needs.Build.outputs.armv7l == 1
@@ -144,7 +144,7 @@ jobs:
           path: "${{ env.EXE }}"
       - name: clean dist
         if: needs.Build.outputs.armv7l == 1
-        run: rm dist
+        run: rm dist -Recurse -Force
       
   BuildLinux:
     needs: Build
