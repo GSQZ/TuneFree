@@ -1,7 +1,7 @@
 name: Build/release
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
     inputs:
       platform:
         description: '目标平台'
