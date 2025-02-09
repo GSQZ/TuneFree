@@ -35,6 +35,6 @@ jobs:
         with:
           node-version: 20
       - name: setup environment
-        run: npm install pnpm -g && 
+        run: npm install pnpm -g
       - name: install libs
         run: pnpm install
