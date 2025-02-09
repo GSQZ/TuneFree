@@ -129,22 +129,7 @@ jobs:
 
       - name: build armv7l
         if: needs.Build.outputs.armv7l == 1
-        run: npm run build && pnpm electron-builder --win --armv7l --config --publish never
-      - name: reg windows armv7l builds
-        if: needs.Build.outputs.armv7l == 1
-        run: $EXE="dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)" ;
-             $NAME=(get-item "dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)").BaseName ;
-             echo EXE=$EXE >> $env:GITHUB_ENV ;
-             echo NAME=$NAME >> $env:GITHUB_ENV
-      - name: Upload EXE RELEASE
-        if: needs.Build.outputs.armv7l == 1
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.NAME }}"
-          path: "${{ env.EXE }}"
-      - name: clean dist
-        if: needs.Build.outputs.armv7l == 1
-        run: rm dist -Recurse -Force
+        run: echo "no armv7l support for windows"
       
   BuildLinux:
     needs: Build
