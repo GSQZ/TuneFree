@@ -2,6 +2,26 @@ name: Build/release
 
 on:
   workflow_dispatch
+    inputs:
+      platform:
+        description: '目标平台'
+        required: true
+        default: 'windows'
+        type: choice
+        options:
+          - windows
+          - linux
+      arch:
+        description: '平台架构'
+        required: true
+        default: 'x64'
+        type: choice
+        options:
+          - x86_64
+          - x64
+          - arm64
+
+          
 
 jobs:
   BuildLinux:
