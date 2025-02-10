@@ -23,6 +23,11 @@ on:
           - arm64
           - armv7l
           - all
+      release:
+        description: '是否发布'
+        required: true
+        default: false
+        type: boolean
 
           
 

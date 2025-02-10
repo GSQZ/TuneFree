@@ -1,0 +1,10 @@
+name: test workflows
+
+on:
+    workflow_dispatch
+
+jobs:
+    LogGitRef:
+        runs-on: ubuntu-latest
+        steps:
+            - run: echo ${{ github.ref }}
