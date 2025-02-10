@@ -42,6 +42,10 @@ jobs:
       arm64: ${{ steps.step5.outputs.arm64 }}
       armv7l: ${{ steps.step6.outputs.armv7l }}
     steps:
+      - id: stepn1
+        uses: actions/checkout@v4
+      - id: step0
+        run: apt install jq
       - id: step1
         run: if [[ ${{inputs.platform}} == 'windows' || ${{inputs.platform}} == 'all' ]]; then echo "windows=1" >> "$GITHUB_OUTPUT" ; else echo "windows=0" >> "$GITHUB_OUTPUT" ; fi
       - id: step2
@@ -54,6 +58,15 @@ jobs:
         run: if [[ ${{inputs.arch}} == 'arm64' || ${{inputs.arch}} == 'all' ]]; then echo "arm64=1" >> "$GITHUB_OUTPUT" ; else echo "arm64=0" >> "$GITHUB_OUTPUT" ; fi
       - id: step6
         run: if [[ ${{inputs.arch}} == 'armv7l' || ${{inputs.arch}} == 'all' ]]; then echo "armv7l=1" >> "$GITHUB_OUTPUT" ; else echo "armv7l=0" >> "$GITHUB_OUTPUT" ; fi
+      - id: step7
+        run: echo "version=$( cat package.json | jq -r '.version' )" >> $GITHUB_ENV
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: inputs.release == true
+        with:
+          name: Release v${{ env.version }}
+          files: |
+            LICENSE.txt
       
 
 
@@ -65,7 +78,7 @@ jobs:
     runs-on: 	windows-latest
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v4
         with:
@@ -83,7 +96,7 @@ jobs:
       - name: reg windows x86 packs
         if: needs.Build.outputs.x86 == 1
         run: $EXE="dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)" ;
-             $NAME=(get-item "dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)").BaseName ;
+             $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
              echo EXE=$EXE >> $env:GITHUB_ENV ;
              echo NAME=$NAME >> $env:GITHUB_ENV
       - name: Upload EXE RELEASE
@@ -92,6 +105,13 @@ jobs:
         with:
           name: "${{ env.NAME }}"
           path: "${{ env.EXE }}"
+      - name: Upload EXE Release
+        uses: softprops/action-gh-release@v2
+        if: inputs.release == true
+        with:
+          append_body: true
+          files: |
+            ${{ env.EXE }}
       - name: clean dist
         if: needs.Build.outputs.x86 == 1
         run: rm dist -Recurse -Force
@@ -102,7 +122,7 @@ jobs:
       - name: reg windows x64 packs
         if: needs.Build.outputs.x86_64 == 1
         run: $EXE="dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)" ;
-             $NAME=(get-item "dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)").BaseName ;
+             $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
              echo EXE=$EXE >> $env:GITHUB_ENV ;
              echo NAME=$NAME >> $env:GITHUB_ENV
       - name: Upload EXE RELEASE
@@ -111,6 +131,13 @@ jobs:
         with:
           name: "${{ env.NAME }}"
           path: "${{ env.EXE }}"
+      - name: Upload EXE Release
+        uses: softprops/action-gh-release@v2
+        if: inputs.release == true
+        with:
+          append_body: true
+          files: |
+            ${{ env.EXE }}
       - name: clean dist
         if: needs.Build.outputs.x86_64 == 1
         run: rm dist -Recurse -Force
@@ -121,7 +148,7 @@ jobs:
       - name: reg windows arm64 packs
         if: needs.Build.outputs.arm64 == 1
         run: $EXE="dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)" ;
-             $NAME=(get-item "dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)").BaseName ;
+             $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
              echo EXE=$EXE >> $env:GITHUB_ENV ;
              echo NAME=$NAME >> $env:GITHUB_ENV
       - name: Upload EXE RELEASE
@@ -130,6 +157,13 @@ jobs:
         with:
           name: "${{ env.NAME }}"
           path: "${{ env.EXE }}"
+      - name: Upload EXE Release
+        uses: softprops/action-gh-release@v2
+        if: inputs.release == true
+        with:
+          append_body: true
+          files: |
+            ${{ env.EXE }}
       - name: clean dist
         if: needs.Build.outputs.arm64 == 1
         run: rm dist -Recurse -Force
@@ -211,6 +245,16 @@ jobs:
         with:
           name: "${{ env.NAME_TARBALL }}"
           path: "${{ env.TARBALL }}"
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        if: inputs.release == true
+        with:
+          append_body: true
+          files: |
+            ${{ env.APPIMAGE }}
+            ${{ env.RPM }}
+            ${{ env.DEB }}
+            ${{ env.TARBALL }}
       - name: clean dist
         if: needs.Build.outputs.x86_64 == 1
         run: rm -rf dist
@@ -263,6 +307,16 @@ jobs:
         with:
           name: "${{ env.NAME_TARBALL }}"
           path: "${{ env.TARBALL }}"
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        if: inputs.release == true
+        with:
+          append_body: true
+          files: |
+            ${{ env.APPIMAGE }}
+            ${{ env.RPM }}
+            ${{ env.DEB }}
+            ${{ env.TARBALL }}
       - name: clean dist
         if: needs.Build.outputs.arm64 == 1
         run: rm -rf dist
@@ -315,6 +369,16 @@ jobs:
         with:
           name: "${{ env.NAME_TARBALL }}"
           path: "${{ env.TARBALL }}"
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        if: inputs.release == true
+        with:
+          append_body: true
+          files: |
+            ${{ env.APPIMAGE }}
+            ${{ env.RPM }}
+            ${{ env.DEB }}
+            ${{ env.TARBALL }}
       - name: clean dist
         if: needs.Build.outputs.armv7l == 1
         run: rm -rf dist
