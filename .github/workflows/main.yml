@@ -69,11 +69,13 @@ jobs:
         run: npm install pnpm -g
       - name: install libs
         run: pnpm install
+      - name: build 
+        run: npm run build
 
-      - name: build x86
+      - name: pack x86
         if: needs.Build.outputs.x86 == 1
-        run: npm run build && pnpm electron-builder --win --ia32 --config --publish never
-      - name: reg windows x86 builds
+        run: pnpm electron-builder --win --ia32 --config --publish never
+      - name: reg windows x86 packs
         if: needs.Build.outputs.x86 == 1
         run: $EXE="dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)" ;
              $NAME=(get-item "dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)").BaseName ;
@@ -89,10 +91,10 @@ jobs:
         if: needs.Build.outputs.x86 == 1
         run: rm dist -Recurse -Force
 
-      - name: build x86_64
+      - name: pack x86_64
         if: needs.Build.outputs.x86_64 == 1
-        run: npm run build && pnpm electron-builder --win --x64 --config --publish never
-      - name: reg windows x64 builds
+        run: pnpm electron-builder --win --x64 --config --publish never
+      - name: reg windows x64 packs
         if: needs.Build.outputs.x86_64 == 1
         run: $EXE="dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)" ;
              $NAME=(get-item "dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)").BaseName ;
@@ -108,10 +110,10 @@ jobs:
         if: needs.Build.outputs.x86_64 == 1
         run: rm dist -Recurse -Force
 
-      - name: build arm64
+      - name: pack arm64
         if: needs.Build.outputs.arm64 == 1
-        run: npm run build && pnpm electron-builder --win --arm64 --config --publish never
-      - name: reg windows arm64 builds
+        run: pnpm electron-builder --win --arm64 --config --publish never
+      - name: reg windows arm64 packs
         if: needs.Build.outputs.arm64 == 1
         run: $EXE="dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)" ;
              $NAME=(get-item "dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)").BaseName ;
@@ -127,7 +129,7 @@ jobs:
         if: needs.Build.outputs.arm64 == 1
         run: rm dist -Recurse -Force
 
-      - name: build armv7l
+      - name: pack armv7l
         if: needs.Build.outputs.armv7l == 1
         run: echo "no armv7l support for windows"
       
@@ -147,19 +149,21 @@ jobs:
         run: npm install pnpm -g
       - name: install libs
         run: pnpm install
+      - name: build
+        run: npm run build
       
-      - name: build x86
+      - name: pack x86
         if: needs.Build.outputs.x86 == 1
         run: echo "no x86 support for linux"
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
       
-      - name: build x86_64
+      - name: pack x86_64
         if: needs.Build.outputs.x86_64 == 1
-        run: npm run build && pnpm electron-builder --linux --x64 --config --publish never
+        run:  pnpm electron-builder --linux --x64 --config --publish never
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
-      - name: reg linux x86_64 builds
+      - name: reg linux x86_64 packs
         if: needs.Build.outputs.x86_64 == 1
         run: |
           APPIMAGE=$(find dist -name "*.AppImage") &&
@@ -206,12 +210,12 @@ jobs:
         if: needs.Build.outputs.x86_64 == 1
         run: rm -rf dist
 
-      - name: build arm64
+      - name: pack arm64
         if: needs.Build.outputs.arm64 == 1
-        run: npm run build && pnpm electron-builder --linux --arm64 --config --publish never
+        run:  pnpm electron-builder --linux --arm64 --config --publish never
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
-      - name: reg linux arm64 builds
+      - name: reg linux arm64 packs
         if: needs.Build.outputs.arm64 == 1
         run: |
           APPIMAGE=$(find dist -name "*.AppImage") &&
@@ -258,12 +262,12 @@ jobs:
         if: needs.Build.outputs.arm64 == 1
         run: rm -rf dist
 
-      - name: build armv7l
+      - name: pack armv7l
         if: needs.Build.outputs.armv7l == 1
-        run: npm run build && pnpm electron-builder --linux --armv7l --config --publish never
+        run:  pnpm electron-builder --linux --armv7l --config --publish never
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
-      - name: reg linux armv7l builds
+      - name: reg linux armv7l packs
         if: needs.Build.outputs.armv7l == 1
         run: |
           APPIMAGE=$(find dist -name "*.AppImage") &&
