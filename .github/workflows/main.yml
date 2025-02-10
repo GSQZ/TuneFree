@@ -89,6 +89,8 @@ jobs:
         run: npm install pnpm -g
       - name: install libs
         run: pnpm install
+      - name: postinstall
+        run: pnpm postinstall
       - name: build 
         run: pnpm build
 
