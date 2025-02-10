@@ -6,7 +6,7 @@ on:
       platform:
         description: '目标平台'
         required: true
-        default: 'windows'
+        default: 'all'
         type: choice
         options:
           - windows
@@ -15,7 +15,7 @@ on:
       arch:
         description: '平台架构'
         required: true
-        default: 'x86_64'
+        default: 'all'
         type: choice
         options:
           - x86_64
