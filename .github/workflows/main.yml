@@ -97,8 +97,8 @@ jobs:
         run: pnpm electron-builder --win --ia32 --config --publish never
       - name: reg windows x86 packs
         if: needs.Build.outputs.x86 == 1
-        run: $EXE="dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)" ;
-             $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
+        run: $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
+             $EXE="dist/${NAME}" ;
              echo EXE=$EXE >> $env:GITHUB_ENV ;
              echo NAME=$NAME >> $env:GITHUB_ENV
       - name: Upload EXE RELEASE
@@ -124,8 +124,8 @@ jobs:
         run: pnpm electron-builder --win --x64 --config --publish never
       - name: reg windows x64 packs
         if: needs.Build.outputs.x86_64 == 1
-        run: $EXE="dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)" ;
-             $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
+        run: $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
+             $EXE="dist/${NAME}" ;
              echo EXE=$EXE >> $env:GITHUB_ENV ;
              echo NAME=$NAME >> $env:GITHUB_ENV
       - name: Upload EXE RELEASE
@@ -151,8 +151,8 @@ jobs:
         run: pnpm electron-builder --win --arm64 --config --publish never
       - name: reg windows arm64 packs
         if: needs.Build.outputs.arm64 == 1
-        run: $EXE="dist\$(Get-Childitem -Path dist -Include *.exe -Name -File)" ;
-             $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
+        run: $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
+             $EXE="dist/${NAME}" ;
              echo EXE=$EXE >> $env:GITHUB_ENV ;
              echo NAME=$NAME >> $env:GITHUB_ENV
       - name: Upload EXE RELEASE
