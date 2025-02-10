@@ -86,7 +86,7 @@ jobs:
         with:
           node-version: 20
       - name: setup environment
-        run: npm install pnpm -g
+        run: npm install pnpm electron-builder -g
       - name: install libs
         run: pnpm install
       - name: postinstall
@@ -192,7 +192,7 @@ jobs:
         with:
           node-version: 20
       - name: setup environment
-        run: npm install pnpm -g
+        run: npm install pnpm electron-builder -g
       - name: install libs
         run: pnpm install
       - name: build
