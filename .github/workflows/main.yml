@@ -150,7 +150,7 @@ jobs:
 
       - name: pack arm64
         if: needs.Build.outputs.arm64 == 1
-        run: electron-builder --win --arm64 --config --publish never
+        run: pnpm electron-builder --win --arm64 --config --publish never
       - name: reg windows arm64 packs
         if: needs.Build.outputs.arm64 == 1
         run: $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
