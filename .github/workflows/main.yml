@@ -92,11 +92,11 @@ jobs:
       - name: postinstall
         run: pnpm postinstall
       - name: build 
-        run: pnpm build
+        run: npm run build
 
       - name: pack x86
         if: needs.Build.outputs.x86 == 1
-        run: pnpm electron-builder --win --ia32 --config --publish never
+        run: electron-builder --win --ia32 --config --publish never
       - name: reg windows x86 packs
         if: needs.Build.outputs.x86 == 1
         run: $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
@@ -123,7 +123,7 @@ jobs:
 
       - name: pack x86_64
         if: needs.Build.outputs.x86_64 == 1
-        run: pnpm electron-builder --win --x64 --config --publish never
+        run: electron-builder --win --x64 --config --publish never
       - name: reg windows x64 packs
         if: needs.Build.outputs.x86_64 == 1
         run: $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
@@ -150,7 +150,7 @@ jobs:
 
       - name: pack arm64
         if: needs.Build.outputs.arm64 == 1
-        run: pnpm electron-builder --win --arm64 --config --publish never
+        run: electron-builder --win --arm64 --config --publish never
       - name: reg windows arm64 packs
         if: needs.Build.outputs.arm64 == 1
         run: $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
@@ -196,7 +196,7 @@ jobs:
       - name: install libs
         run: pnpm install
       - name: build
-        run: pnpm build
+        run: npm run build
       
       - name: pack x86
         if: needs.Build.outputs.x86 == 1
@@ -206,7 +206,7 @@ jobs:
       
       - name: pack x86_64
         if: needs.Build.outputs.x86_64 == 1
-        run:  pnpm electron-builder --linux --x64 --config --publish never
+        run:  electron-builder --linux --x64 --config --publish never
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
       - name: reg linux x86_64 packs
@@ -269,7 +269,7 @@ jobs:
 
       - name: pack arm64
         if: needs.Build.outputs.arm64 == 1
-        run:  pnpm electron-builder --linux --arm64 --config --publish never
+        run:  electron-builder --linux --arm64 --config --publish never
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
       - name: reg linux arm64 packs
@@ -332,7 +332,7 @@ jobs:
 
       - name: pack armv7l
         if: needs.Build.outputs.armv7l == 1
-        run:  pnpm electron-builder --linux --armv7l --config --publish never
+        run:  electron-builder --linux --armv7l --config --publish never
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
       - name: reg linux armv7l packs
