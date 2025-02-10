@@ -105,10 +105,10 @@
 ## ⚙️ 本地部署
 
 1. 本地部署需要用到 `Node.js`。可前往 [Node.js 官网](https://nodejs.org/zh-cn/) 下载安装包，请下载最新稳定版
-2. 安装 pnpm
+2. 安装 pnpm、electron-builder
 
    ```bash
-   npm install pnpm -g
+   npm install pnpm electron-builder -g
    ```
 
 3. 克隆仓库并拉取至本地，此处不再赘述
