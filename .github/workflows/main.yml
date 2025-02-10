@@ -45,7 +45,7 @@ jobs:
       - id: stepn1
         uses: actions/checkout@v4
       - id: step0
-        run: apt install jq
+        run: sudo apt install jq
       - id: step1
         run: if [[ ${{inputs.platform}} == 'windows' || ${{inputs.platform}} == 'all' ]]; then echo "windows=1" >> "$GITHUB_OUTPUT" ; else echo "windows=0" >> "$GITHUB_OUTPUT" ; fi
       - id: step2
