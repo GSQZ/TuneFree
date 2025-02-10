@@ -70,7 +70,7 @@ jobs:
       - name: install libs
         run: pnpm install
       - name: build 
-        run: npm run build
+        run: pnpm build
 
       - name: pack x86
         if: needs.Build.outputs.x86 == 1
@@ -150,7 +150,7 @@ jobs:
       - name: install libs
         run: pnpm install
       - name: build
-        run: npm run build
+        run: pnpm build
       
       - name: pack x86
         if: needs.Build.outputs.x86 == 1
