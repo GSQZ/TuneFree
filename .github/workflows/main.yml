@@ -1,112 +1,187 @@
 name: Build/release
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: '目标平台'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - windows
+          - linux
+          - all
+      arch:
+        description: '平台架构'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - x86_64
+          - x86
+          - arm64
+          - armv7l
+          - all
+      release:
+        description: '是否发布'
+        required: true
+        default: false
+        type: boolean
+
+          
 
 jobs:
-  BuildLinux:
+  Build:
     runs-on: ubuntu-latest
-
+    outputs:
+      windows: ${{ steps.step1.outputs.windows }}
+      linux: ${{ steps.step2.outputs.linux }}
+      x86_64: ${{ steps.step3.outputs.x86_64 }}
+      x86: ${{ steps.step4.outputs.x86 }}
+      arm64: ${{ steps.step5.outputs.arm64 }}
+      armv7l: ${{ steps.step6.outputs.armv7l }}
+      tag: ${{ env.version }}
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v1
-      - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v1
+      - id: stepn1
+        uses: actions/checkout@v4
+      - id: step0
+        run: sudo apt install jq
+      - id: step1
+        run: if [[ ${{inputs.platform}} == 'windows' || ${{inputs.platform}} == 'all' ]]; then echo "windows=1" >> "$GITHUB_OUTPUT" ; else echo "windows=0" >> "$GITHUB_OUTPUT" ; fi
+      - id: step2
+        run: if [[ ${{inputs.platform}} == 'linux' || ${{inputs.platform}} == 'all' ]]; then echo "linux=1" >> "$GITHUB_OUTPUT" ; else echo "linux=0" >> "$GITHUB_OUTPUT" ; fi
+      - id: step3
+        run: if [[ ${{inputs.arch}} == 'x86_64' || ${{inputs.arch}} == 'all' ]]; then echo "x86_64=1" >> "$GITHUB_OUTPUT" ; else echo "x86_64=0" >> "$GITHUB_OUTPUT" ; fi
+      - id: step4
+        run: if [[ ${{inputs.arch}} == 'x86' || ${{inputs.arch}} == 'all' ]]; then echo "x86=1" >> "$GITHUB_OUTPUT" ; else echo "x86=0" >> "$GITHUB_OUTPUT" ; fi
+      - id: step5
+        run: if [[ ${{inputs.arch}} == 'arm64' || ${{inputs.arch}} == 'all' ]]; then echo "arm64=1" >> "$GITHUB_OUTPUT" ; else echo "arm64=0" >> "$GITHUB_OUTPUT" ; fi
+      - id: step6
+        run: if [[ ${{inputs.arch}} == 'armv7l' || ${{inputs.arch}} == 'all' ]]; then echo "armv7l=1" >> "$GITHUB_OUTPUT" ; else echo "armv7l=0" >> "$GITHUB_OUTPUT" ; fi
+      - id: step7
+        run: echo "version=$( cat package.json | jq -r '.version' )" >> $GITHUB_ENV
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: inputs.release == true
         with:
-          node-version: 20
-      - name: setup environment
-        run: npm install pnpm -g
-      - name: install libs
-        run: pnpm install
-  
-      - name: build linux x64
-        run: pnpm build:linux
-        env: 
-          GH_TOKEN: ${{ secrets.github_token }}
-      - name: reg linux x64 builds
-        run: AMD64APPIMAGE=$(find dist -name "*-x86_64.AppImage") &&
-             AMD64RPM=$(find dist -name "*-x86_64.rpm") &&
-             AMD64DEB=$(find dist -name "*-amd64.deb") &&
-             AMD64TARBALL=$(find dist -name "*-x64.tar.gz") &&
-             NAME_AMD64APPIMAGE=$(basename "${AMD64APPIMAGE}") &&
-             NAME_AMD64RPM=$(basename "${AMD64RPM}") &&
-             NAME_AMD64DEB=$(basename "${AMD64DEB}") &&
-             NAME_AMD64TARBALL=$(basename "${AMD64TARBALL}") &&
-             echo "AMD64APPIMAGE=${AMD64APPIMAGE}" >> $GITHUB_ENV &&
-             echo "NAME_AMD64APPIMAGE=${NAME_AMD64APPIMAGE}" >> $GITHUB_ENV &&
-             echo "AMD64RPM=${AMD64RPM}" >> $GITHUB_ENV &&
-             echo "NAME_AMD64RPM=${NAME_AMD64RPM}" >> $GITHUB_ENV &&
-             echo "AMD64DEB=${AMD64DEB}" >> $GITHUB_ENV &&
-             echo "NAME_AMD64DEB=${NAME_AMD64DEB}" >> $GITHUB_ENV &&
-             echo "AMD64TARBALL=${AMD64TARBALL}" >> $GITHUB_ENV &&
-             echo "NAME_AMD64TARBALL=${NAME_AMD64TARBALL}" >> $GITHUB_ENV
-      - name: build linux arm64
-        run: pnpm build:linux-arm64
-        env: 
-          GH_TOKEN: ${{ secrets.github_token }}
-      - name: reg linux arm64 builds
-        run: ARM64APPIMAGE=$(find dist -name "*-arm64.AppImage") &&
-             ARM64RPM=$(find dist -name "*-aarch64.rpm") &&
-             ARM64DEB=$(find dist -name "*-arm64.deb") &&
-             ARM64TARBALL=$(find dist -name "*-arm64.tar.gz") &&
-             NAME_ARM64APPIMAGE=$(basename "${ARM64APPIMAGE}") &&
-             NAME_ARM64RPM=$(basename "${ARM64RPM}") &&
-             NAME_ARM64DEB=$(basename "${ARM64DEB}") &&
-             NAME_ARM64TARBALL=$(basename "${ARM64TARBALL}") &&
-             echo "ARM64APPIMAGE=${ARM64APPIMAGE}" >> $GITHUB_ENV &&
-             echo "NAME_ARM64APPIMAGE=${NAME_ARM64APPIMAGE}" >> $GITHUB_ENV &&
-             echo "ARM64RPM=${ARM64RPM}" >> $GITHUB_ENV &&
-             echo "NAME_ARM64RPM=${NAME_ARM64RPM}" >> $GITHUB_ENV &&
-             echo "ARM64DEB=${ARM64DEB}" >> $GITHUB_ENV &&
-             echo "NAME_ARM64DEB=${NAME_ARM64DEB}" >> $GITHUB_ENV &&
-             echo "ARM64TARBALL=${ARM64TARBALL}" >> $GITHUB_ENV &&
-             echo "NAME_ARM64TARBALL=${NAME_ARM64TARBALL}" >> $GITHUB_ENV
-             
-             
-        
-      - name: Upload AMD64 APPIMAGE RELEASE
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.NAME_AMD64APPIMAGE }}"
-          path: "${{ env.AMD64APPIMAGE }}"
-      - name: Upload AMD64 RPM RELEASE
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.NAME_AMD64RPM }}"
-          path: "${{ env.AMD64RPM }}"
-      - name: Upload AMD64 DEB RELEASE
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.NAME_AMD64DEB }}"
-          path: "${{ env.AMD64DEB }}"
-      - name: Upload AMD64 TARBALL RELEASE
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.NAME_AMD64TARBALL }}"
-          path: "${{ env.AMD64TARBALL }}"
-        
-      - name: Upload ARM64 APPIMAGE RELEASE
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.NAME_ARM64APPIMAGE }}"
-          path: "${{ env.ARM64APPIMAGE }}"
-      - name: Upload ARM64 RPM RELEASE
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.NAME_ARM64RPM }}"
-          path: "${{ env.ARM64RPM }}"
-      - name: Upload ARM64 DEB RELEASE
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.NAME_ARM64DEB }}"
-          path: "${{ env.ARM64DEB }}"
-      - name: Upload ARM64 TARBALL RELEASE
-        uses: actions/upload-artifact@v4
-        with:
-          name: "${{ env.NAME_ARM64TARBALL }}"
-          path: "${{ env.ARM64TARBALL }}"
+          name: Release v${{ env.version }}
+          tag_name: ${{ env.version }}
+          files: |
+            LICENSE.txt
+      
+
+
+
 
   BuildWindows:
+    needs: Build
+    if: needs.Build.outputs.windows == 1
+    runs-on: 	windows-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: setup environment
+        run: npm install pnpm electron-builder -g
+      - name: install libs
+        run: pnpm install
+      - name: postinstall
+        run: pnpm postinstall
+      - name: build 
+        run: npm run build
+
+      - name: pack x86
+        if: needs.Build.outputs.x86 == 1
+        run: electron-builder --win --ia32 --config --publish never
+      - name: reg windows x86 packs
+        if: needs.Build.outputs.x86 == 1
+        run: $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
+             $EXE="dist/${NAME}" ;
+             echo EXE=$EXE >> $env:GITHUB_ENV ;
+             echo NAME=$NAME >> $env:GITHUB_ENV
+      - name: Upload EXE RELEASE
+        if: needs.Build.outputs.x86 == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME }}"
+          path: "${{ env.EXE }}"
+      - name: Upload EXE Release
+        uses: softprops/action-gh-release@v2
+        if: inputs.release == true
+        with:
+          append_body: true
+          tag_name: ${{ needs.Build.outputs.tag }}
+          files: |
+            ${{ env.EXE }}
+      - name: clean dist
+        if: needs.Build.outputs.x86 == 1
+        run: rm dist -Recurse -Force
+
+      - name: pack x86_64
+        if: needs.Build.outputs.x86_64 == 1
+        run: electron-builder --win --x64 --config --publish never
+      - name: reg windows x64 packs
+        if: needs.Build.outputs.x86_64 == 1
+        run: $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
+             $EXE="dist/${NAME}" ;
+             echo EXE=$EXE >> $env:GITHUB_ENV ;
+             echo NAME=$NAME >> $env:GITHUB_ENV
+      - name: Upload EXE RELEASE
+        if: needs.Build.outputs.x86_64 == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME }}"
+          path: "${{ env.EXE }}"
+      - name: Upload EXE Release
+        uses: softprops/action-gh-release@v2
+        if: inputs.release == true
+        with:
+          append_body: true
+          tag_name: ${{ needs.Build.outputs.tag }}
+          files: |
+            ${{ env.EXE }}
+      - name: clean dist
+        if: needs.Build.outputs.x86_64 == 1
+        run: rm dist -Recurse -Force
+
+      - name: pack arm64
+        if: needs.Build.outputs.arm64 == 1
+        run: electron-builder --win --arm64 --config --publish never
+      - name: reg windows arm64 packs
+        if: needs.Build.outputs.arm64 == 1
+        run: $NAME=Get-Childitem -Path dist -Include *.exe -Name -File ;
+             $EXE="dist/${NAME}" ;
+             echo EXE=$EXE >> $env:GITHUB_ENV ;
+             echo NAME=$NAME >> $env:GITHUB_ENV
+      - name: Upload EXE RELEASE
+        if: needs.Build.outputs.arm64 == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME }}"
+          path: "${{ env.EXE }}"
+      - name: Upload EXE Release
+        uses: softprops/action-gh-release@v2
+        if: inputs.release == true
+        with:
+          append_body: true
+          tag_name: ${{ needs.Build.outputs.tag }}
+          files: |
+            ${{ env.EXE }}
+      - name: clean dist
+        if: needs.Build.outputs.arm64 == 1
+        run: rm dist -Recurse -Force
+
+      - name: pack armv7l
+        if: needs.Build.outputs.armv7l == 1
+        run: echo "no armv7l support for windows"
+      
+  BuildLinux:
+    needs: Build
+    if: needs.Build.outputs.linux == 1
     runs-on: ubuntu-latest
 
     steps:
@@ -117,51 +192,204 @@ jobs:
         with:
           node-version: 20
       - name: setup environment
-        run: npm install pnpm -g && 
-             sudo apt-get install wine winetricks &&
-             sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install wine32:i386
-      
-      - name: setup wine
-        run: rm -rf ~/.wine &&
-             mkdir ~/.wine &&
-             mkdir ~/.wine/prefix &&
-             export WINEPREFIX=~/.wine/prefix &&
-             export WINEARCH=win32 &&
-             export WINEPATH=~/.wine &&
-             wineboot --init &&
-             winetricks 
+        run: npm install pnpm electron-builder -g
       - name: install libs
         run: pnpm install
-  
-      - name: build windows x64
-        run: pnpm build:win
+      - name: build
+        run: npm run build
+      
+      - name: pack x86
+        if: needs.Build.outputs.x86 == 1
+        run: echo "no x86 support for linux"
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
-      - name: reg windows x64 builds
-        run: AMD64EXE=$(find dist -name "*-x64-*.exe") &&
-             NAME_AMD64EXE=$(basename "${AMD64EXE}") &&
-             echo "AMD64EXE=${AMD64EXE}" >> $GITHUB_ENV &&
-             echo "NAME_AMD64EXE=${NAME_AMD64EXE}" >> $GITHUB_ENV 
-      - name: build windows arm64
-        run: pnpm build:win-arm64
+      
+      - name: pack x86_64
+        if: needs.Build.outputs.x86_64 == 1
+        run:  electron-builder --linux --x64 --config --publish never
         env: 
           GH_TOKEN: ${{ secrets.github_token }}
-      - name: reg windows arm64 builds
-        run: ARM64EXE=$(find dist -name "*-arm64-*.exe") &&
-             NAME_ARM64EXE=$(basename "${ARM64EXE}") &&
-             echo "ARM64EXE=${ARM64EXE}" >> $GITHUB_ENV &&
-             echo "NAME_ARM64EXE=${NAME_ARM64EXE}" >> $GITHUB_ENV
-             
-             
-        
-      - name: Upload AMD64 EXE RELEASE
+      - name: reg linux x86_64 packs
+        if: needs.Build.outputs.x86_64 == 1
+        run: |
+          APPIMAGE=$(find dist -name "*.AppImage") &&
+          RPM=$(find dist -name "*.rpm") &&
+          DEB=$(find dist -name "*.deb") &&
+          TARBALL=$(find dist -name "*.tar.gz") &&
+          NAME_APPIMAGE=$(basename "${APPIMAGE}") &&
+          NAME_RPM=$(basename "${RPM}") &&
+          NAME_DEB=$(basename "${DEB}") &&
+          NAME_TARBALL=$(basename "${TARBALL}") &&
+          echo "APPIMAGE=${APPIMAGE}" >> $GITHUB_ENV &&
+          echo "NAME_APPIMAGE=${NAME_APPIMAGE}" >> $GITHUB_ENV &&
+          echo "RPM=${RPM}" >> $GITHUB_ENV &&
+          echo "NAME_RPM=${NAME_RPM}" >> $GITHUB_ENV &&
+          echo "DEB=${DEB}" >> $GITHUB_ENV &&
+          echo "NAME_DEB=${NAME_DEB}" >> $GITHUB_ENV &&
+          echo "TARBALL=${TARBALL}" >> $GITHUB_ENV &&
+          echo "NAME_TARBALL=${NAME_TARBALL}" >> $GITHUB_ENV
+      - name: Upload APPIMAGE RELEASE
+        if: needs.Build.outputs.x86_64 == 1
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ env.NAME_AMD64EXE }}"
-          path: "${{ env.AMD64EXE }}"
+          name: "${{ env.NAME_APPIMAGE }}"
+          path: "${{ env.APPIMAGE }}"
+      - name: Upload RPM RELEASE
+        if: needs.Build.outputs.x86_64 == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_RPM }}"
+          path: "${{ env.RPM }}"
+      - name: Upload DEB RELEASE
+        if: needs.Build.outputs.x86_64 == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_DEB }}"
+          path: "${{ env.DEB }}"
+      - name: Upload TARBALL RELEASE
+        if: needs.Build.outputs.x86_64 == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_TARBALL }}"
+          path: "${{ env.TARBALL }}"
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        if: inputs.release == true
+        with:
+          append_body: true
+          tag_name: ${{ needs.Build.outputs.tag }}
+          files: |
+            ${{ env.APPIMAGE }}
+            ${{ env.RPM }}
+            ${{ env.DEB }}
+            ${{ env.TARBALL }}
+      - name: clean dist
+        if: needs.Build.outputs.x86_64 == 1
+        run: rm -rf dist
 
-      - name: Upload ARM64 EXE RELEASE
+      - name: pack arm64
+        if: needs.Build.outputs.arm64 == 1
+        run:  electron-builder --linux --arm64 --config --publish never
+        env: 
+          GH_TOKEN: ${{ secrets.github_token }}
+      - name: reg linux arm64 packs
+        if: needs.Build.outputs.arm64 == 1
+        run: |
+          APPIMAGE=$(find dist -name "*.AppImage") &&
+          RPM=$(find dist -name "*.rpm") &&
+          DEB=$(find dist -name "*.deb") &&
+          TARBALL=$(find dist -name "*.tar.gz") &&
+          NAME_APPIMAGE=$(basename "${APPIMAGE}") &&
+          NAME_RPM=$(basename "${RPM}") &&
+          NAME_DEB=$(basename "${DEB}") &&
+          NAME_TARBALL=$(basename "${TARBALL}") &&
+          echo "APPIMAGE=${APPIMAGE}" >> $GITHUB_ENV &&
+          echo "NAME_APPIMAGE=${NAME_APPIMAGE}" >> $GITHUB_ENV &&
+          echo "RPM=${RPM}" >> $GITHUB_ENV &&
+          echo "NAME_RPM=${NAME_RPM}" >> $GITHUB_ENV &&
+          echo "DEB=${DEB}" >> $GITHUB_ENV &&
+          echo "NAME_DEB=${NAME_DEB}" >> $GITHUB_ENV &&
+          echo "TARBALL=${TARBALL}" >> $GITHUB_ENV &&
+          echo "NAME_TARBALL=${NAME_TARBALL}" >> $GITHUB_ENV
+      - name: Upload APPIMAGE RELEASE
+        if: needs.Build.outputs.arm64 == 1
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ env.NAME_ARM64EXE }}"
-          path: "${{ env.ARM64EXE }}"
+          name: "${{ env.NAME_APPIMAGE }}"
+          path: "${{ env.APPIMAGE }}"
+      - name: Upload RPM RELEASE
+        if: needs.Build.outputs.arm64 == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_RPM }}"
+          path: "${{ env.RPM }}"
+      - name: Upload DEB RELEASE
+        if: needs.Build.outputs.arm64 == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_DEB }}"
+          path: "${{ env.DEB }}"
+      - name: Upload TARBALL RELEASE
+        if: needs.Build.outputs.arm64 == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_TARBALL }}"
+          path: "${{ env.TARBALL }}"
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        if: inputs.release == true
+        with:
+          append_body: true
+          tag_name: ${{ needs.Build.outputs.tag }}
+          files: |
+            ${{ env.APPIMAGE }}
+            ${{ env.RPM }}
+            ${{ env.DEB }}
+            ${{ env.TARBALL }}
+      - name: clean dist
+        if: needs.Build.outputs.arm64 == 1
+        run: rm -rf dist
+
+      - name: pack armv7l
+        if: needs.Build.outputs.armv7l == 1
+        run:  electron-builder --linux --armv7l --config --publish never
+        env: 
+          GH_TOKEN: ${{ secrets.github_token }}
+      - name: reg linux armv7l packs
+        if: needs.Build.outputs.armv7l == 1
+        run: |
+          APPIMAGE=$(find dist -name "*.AppImage") &&
+          RPM=$(find dist -name "*.rpm") &&
+          DEB=$(find dist -name "*.deb") &&
+          TARBALL=$(find dist -name "*.tar.gz") &&
+          NAME_APPIMAGE=$(basename "${APPIMAGE}") &&
+          NAME_RPM=$(basename "${RPM}") &&
+          NAME_DEB=$(basename "${DEB}") &&
+          NAME_TARBALL=$(basename "${TARBALL}") &&
+          echo "APPIMAGE=${APPIMAGE}" >> $GITHUB_ENV &&
+          echo "NAME_APPIMAGE=${NAME_APPIMAGE}" >> $GITHUB_ENV &&
+          echo "RPM=${RPM}" >> $GITHUB_ENV &&
+          echo "NAME_RPM=${NAME_RPM}" >> $GITHUB_ENV &&
+          echo "DEB=${DEB}" >> $GITHUB_ENV &&
+          echo "NAME_DEB=${NAME_DEB}" >> $GITHUB_ENV &&
+          echo "TARBALL=${TARBALL}" >> $GITHUB_ENV &&
+          echo "NAME_TARBALL=${NAME_TARBALL}" >> $GITHUB_ENV
+      - name: Upload APPIMAGE RELEASE
+        if: needs.Build.outputs.armv7l == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_APPIMAGE }}"
+          path: "${{ env.APPIMAGE }}"
+      - name: Upload RPM RELEASE
+        if: needs.Build.outputs.armv7l == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_RPM }}"
+          path: "${{ env.RPM }}"
+      - name: Upload DEB RELEASE
+        if: needs.Build.outputs.armv7l == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_DEB }}"
+          path: "${{ env.DEB }}"
+      - name: Upload TARBALL RELEASE
+        if: needs.Build.outputs.armv7l == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ env.NAME_TARBALL }}"
+          path: "${{ env.TARBALL }}"
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        if: inputs.release == true
+        with:
+          append_body: true
+          tag_name: ${{ needs.Build.outputs.tag }}
+          files: |
+            ${{ env.APPIMAGE }}
+            ${{ env.RPM }}
+            ${{ env.DEB }}
+            ${{ env.TARBALL }}
+      - name: clean dist
+        if: needs.Build.outputs.armv7l == 1
+        run: rm -rf dist
+
